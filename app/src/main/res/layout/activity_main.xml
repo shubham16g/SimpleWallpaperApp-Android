@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_above="@id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorLight"
+            android:elevation="5dp"
+            app:title="@string/app_name" />
+
+        <fragment
+            android:id="@+id/wallsFragment"
+            android:name="com.wallpaperapp.com.fragments.WallsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomNav"
+            android:layout_below="@id/toolbar"
+            tools:layout="@layout/fragment_reycler" />
+
+        <fragment
+            android:id="@+id/categoryFragment"
+            android:name="com.wallpaperapp.com.fragments.CategoryFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomNav"
+            android:layout_below="@id/toolbar"
+            tools:layout="@layout/fragment_reycler" />
+
+        <fragment
+            android:id="@+id/favoriteFragment"
+            android:name="com.wallpaperapp.com.fragments.WallsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomNav"
+            android:layout_below="@id/toolbar"
+            tools:layout="@layout/fragment_reycler" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorLight"
+            app:menu="@menu/bottom_menu" />
+    </RelativeLayout>
+
+
+
+    <!--<com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="@string/main_banner_id" />-->
+
+    <!--        <include layout="@layout/no_internet_layout" />-->
+    <!--        <include layout="@layout/server_error_layout" />-->
+    <!--        <include layout="@layout/splash_layout" />-->
+
+</RelativeLayout>

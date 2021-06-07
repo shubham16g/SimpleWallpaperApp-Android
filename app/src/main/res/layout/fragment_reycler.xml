@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.WallsFragment">
+
+   <androidx.recyclerview.widget.RecyclerView
+       android:id="@+id/recyclerView"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"/>
+
+   <LinearLayout
+       android:visibility="gone"
+       android:id="@+id/errorLayout"
+      android:background="@color/colorBackground"
+       android:layout_width="match_parent"
+       android:gravity="center"
+       android:orientation="vertical"
+       android:layout_height="match_parent">
+      <ImageView
+          android:id="@+id/errorImage"
+          app:tint="@color/colorTextPrimary"
+          android:src="@drawable/no_fav"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:contentDescription="@string/button_icon" />
+      <com.wallpaperapp.com.ProductSansRegular
+          android:id="@+id/errorTitle"
+          android:textSize="18sp"
+          android:textColor="@color/colorTextPrimary"
+          android:layout_marginTop="20dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"/>
+   </LinearLayout>
+
+</FrameLayout>
