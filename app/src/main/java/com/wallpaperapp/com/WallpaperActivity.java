@@ -289,7 +289,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
 
     private void saveImage(Bitmap bitmap, String name) {
-        String root = Environment.getExternalStorageDirectory().toString();
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         File myDir = new File(root + "/" + getString(R.string.app_name));
         if (!myDir.exists())
             myDir.mkdirs();
