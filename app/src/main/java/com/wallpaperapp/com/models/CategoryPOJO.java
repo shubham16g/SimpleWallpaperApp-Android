@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.models;
 
 public class CategoryPOJO {
     private String name, preview1, preview2, preview3;

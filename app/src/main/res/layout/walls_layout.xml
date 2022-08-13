@@ -39,7 +39,7 @@
                 android:layout_gravity="bottom"
                 android:background="@drawable/gradient_bottom" />
 
-            <com.wallpaperapp.com.ProductSansRegular
+            <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,6 +47,7 @@
                 android:layout_margin="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:fontFamily="@font/ps_regular"
                 android:textColor="@color/colorWhite" />
 
             <View

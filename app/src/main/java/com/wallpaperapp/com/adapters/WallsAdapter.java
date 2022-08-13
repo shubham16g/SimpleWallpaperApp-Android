@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,11 +19,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.wallpaperapp.com.R;
+import com.wallpaperapp.com.utils.SQLHelper;
+import com.wallpaperapp.com.activities.WallpaperActivity;
+import com.wallpaperapp.com.models.WallsPOJO;
 
 import java.util.List;
 

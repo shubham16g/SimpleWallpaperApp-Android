@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +13,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.wallpaperapp.com.R;
+import com.wallpaperapp.com.utils.SQLHelper;
 import com.wallpaperapp.com.fragments.WallsFragment;
 
 public class MoreWallsActivity extends AppCompatActivity {

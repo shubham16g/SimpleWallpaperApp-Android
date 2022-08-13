@@ -26,7 +26,7 @@
           android:layout_width="100dp"
           android:layout_height="100dp"
           android:contentDescription="@string/button_icon" />
-      <com.wallpaperapp.com.ProductSansRegular
+      <TextView
           android:id="@+id/errorTitle"
           android:textSize="18sp"
           android:textColor="@color/colorTextPrimary"

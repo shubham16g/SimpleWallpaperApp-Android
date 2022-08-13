@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,12 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.wallpaperapp.com.R;
+import com.wallpaperapp.com.utils.SQLHelper;
+import com.wallpaperapp.com.utils.Utils;
 import com.wallpaperapp.com.fragments.CategoryFragment;
 import com.wallpaperapp.com.fragments.WallsFragment;
 

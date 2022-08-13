@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +12,10 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.wallpaperapp.com.models.CategoryPOJO;
+import com.wallpaperapp.com.R;
+import com.wallpaperapp.com.utils.SQLHelper;
+import com.wallpaperapp.com.models.WallsPOJO;
 
 import org.json.JSONArray;
 import org.json.JSONException;

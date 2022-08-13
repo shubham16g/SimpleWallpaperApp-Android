@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.wallpaperapp.com.models.CategoryPOJO;
+import com.wallpaperapp.com.activities.MoreWallsActivity;
+import com.wallpaperapp.com.R;
 
 import java.util.List;
 

@@ -9,12 +9,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wallpaperapp.com.CategoryAdapter;
-import com.wallpaperapp.com.CategoryPOJO;
+import com.wallpaperapp.com.adapters.CategoryAdapter;
+import com.wallpaperapp.com.models.CategoryPOJO;
 import com.wallpaperapp.com.R;
-import com.wallpaperapp.com.SQLHelper;
-import com.wallpaperapp.com.WallsAdapter;
-import com.wallpaperapp.com.WallsPOJO;
+import com.wallpaperapp.com.utils.SQLHelper;
 
 import java.util.ArrayList;
 

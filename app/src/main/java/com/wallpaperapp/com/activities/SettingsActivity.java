@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.wallpaperapp.com.activities;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.wallpaperapp.com.R;
 
 
 public class SettingsActivity extends AppCompatActivity {

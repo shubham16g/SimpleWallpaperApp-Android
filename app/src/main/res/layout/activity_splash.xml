@@ -5,13 +5,14 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".SplashActivity">
+    tools:context=".activities.SplashActivity">
 
-    <com.wallpaperapp.com.ProductSansSemiBold
+    <TextView
         android:layout_marginTop="250dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
+        android:fontFamily="@font/ps_semi_bold"
         android:textSize="25sp"/>
 
 </LinearLayout>

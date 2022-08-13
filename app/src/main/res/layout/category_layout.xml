@@ -83,16 +83,18 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="5dp"
             android:orientation="vertical">
-            <com.wallpaperapp.com.ProductSansSemiBold
+            <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:fontFamily="@font/ps_semi_bold"
                 android:textColor="@color/colorTextPrimary" />
 
-            <com.wallpaperapp.com.ProductSansRegular
+            <TextView
                 android:id="@+id/subtitle"
+                android:fontFamily="@font/ps_regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

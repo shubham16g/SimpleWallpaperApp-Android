@@ -18,9 +18,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wallpaperapp.com.R;
-import com.wallpaperapp.com.SQLHelper;
-import com.wallpaperapp.com.WallsAdapter;
-import com.wallpaperapp.com.WallsPOJO;
+import com.wallpaperapp.com.utils.SQLHelper;
+import com.wallpaperapp.com.adapters.WallsAdapter;
+import com.wallpaperapp.com.models.WallsPOJO;
 
 import java.util.ArrayList;
 
