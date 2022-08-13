@@ -8,10 +8,10 @@
     tools:context=".SplashActivity">
 
     <com.wallpaperapp.com.ProductSansSemiBold
-        android:layout_marginTop="165dp"
+        android:layout_marginTop="250dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="20sp"/>
+        android:textSize="25sp"/>
 
 </LinearLayout>

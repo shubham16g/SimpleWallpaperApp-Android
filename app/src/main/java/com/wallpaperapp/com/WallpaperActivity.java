@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -42,6 +44,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.chrisbanes.photoview.OnPhotoTapListener;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
@@ -54,8 +58,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class WallpaperActivity extends AppCompatActivity {
 
@@ -109,9 +111,9 @@ public class WallpaperActivity extends AppCompatActivity {
         });
         initInterstitial();
 
-        photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+        photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
             @Override
-            public void onPhotoTap(View view, float x, float y) {
+            public void onPhotoTap(ImageView view, float x, float y) {
                 toggleTouch();
             }
         });
@@ -120,7 +122,7 @@ public class WallpaperActivity extends AppCompatActivity {
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                if (!photoView.canZoom()) {
+                if (!photoView.isZoomable()) {
                     photoView.setImageBitmap(fastBlur(WallpaperActivity.this, resource));
                 }
             }
@@ -377,27 +379,46 @@ public class WallpaperActivity extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     private class setWallpaper extends AsyncTask<Integer, Integer, Boolean> {
+        private Bitmap getBitmap(Drawable drawable) {
+            if (drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                if (bitmapDrawable.getBitmap() != null) {
+                    return bitmapDrawable.getBitmap();
+                }
+            }
+            Bitmap bitmap;
+            if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+            } else {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            }
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
+        }
+
         @Override
         protected Boolean doInBackground(Integer... integers) {
             WallpaperManager manager = WallpaperManager.getInstance(getApplicationContext());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (integers[0] == 1) {
                     try {
-                        manager.setBitmap(photoView.getVisibleRectangleBitmap(), null, true, WallpaperManager.FLAG_SYSTEM);
+                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_SYSTEM);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else if (integers[0] == 2) {
                     try {
-                        manager.setBitmap(photoView.getVisibleRectangleBitmap(), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
+                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     try {
-                        manager.setBitmap(photoView.getVisibleRectangleBitmap(), null, true, WallpaperManager.FLAG_SYSTEM);
-                        manager.setBitmap(photoView.getVisibleRectangleBitmap(), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
+                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_SYSTEM);
+                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -406,7 +427,7 @@ public class WallpaperActivity extends AppCompatActivity {
             } else {
                 if (integers[0] == 0) {
                     try {
-                        manager.setBitmap(photoView.getVisibleRectangleBitmap());
+                        manager.setBitmap(getBitmap(photoView.getDrawable()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

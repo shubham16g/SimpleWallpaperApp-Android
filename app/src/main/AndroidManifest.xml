@@ -30,7 +30,8 @@
         <activity android:name=".SplashActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,17 +41,21 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_settings" />
         <activity android:name=".MoreWallsActivity"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity android:name=".MainActivity"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden">
         </activity>
         <activity android:name=".WallpaperActivity"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
     </application>
