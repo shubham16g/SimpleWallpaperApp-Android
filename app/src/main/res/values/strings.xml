@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Wallpaper App</string>
     <string name="image_card">image card</string>
     <string name="search">Search</string>
     <string name="settings">Settings</string>
@@ -13,16 +12,4 @@
     <string name="save">Save</string>
     <string name="no_fav">No Favorite</string>
     <string name="no_res">No Results</string>
-
-    <!--Edit this test ads id with your own-->
-
-    <string name="main_banner_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="splash_interstitial">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="set_wallpaper_interstitial">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="native_ad_id">ca-app-pub-3940256099942544/2247696110</string>
-
-    <!-- Link to your privacy policy page-->
-
-    <string name="privicy_policy">https://www.google.com</string>
-
 </resources>

@@ -170,7 +170,7 @@ public class WallpaperActivity extends AppCompatActivity {
             }
         });
 
-        InterstitialAd.load(this, getString(R.string.set_wallpaper_interstitial), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getString(R.string.set_wallpaper_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);

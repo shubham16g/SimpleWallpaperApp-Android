@@ -64,7 +64,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
 
-        InterstitialAd.load(this, getString(R.string.splash_interstitial), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getString(R.string.splash_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);

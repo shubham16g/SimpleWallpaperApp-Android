@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+def secretProperties = new Properties()
+secretProperties.load(new FileInputStream(rootProject.file("secret.properties")))
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -10,6 +13,14 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        resValue("string", "app_name", secretProperties['APP_NAME'])
+        resValue("string", "privicy_policy", secretProperties['PRIVACY_POLICY_URL'])
+
+        resValue("string", "main_banner_id", secretProperties['MAIN_BANNER_ID'])
+        resValue("string", "splash_interstitial_id", secretProperties['SPLASH_INTERSTITIAL_ID'])
+        resValue("string", "set_wallpaper_interstitial_id", secretProperties['SET_WALLPAPER_INTERSTITIAL_ID'])
+        resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
