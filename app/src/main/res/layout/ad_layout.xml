@@ -6,7 +6,7 @@
 
     <com.google.android.gms.ads.nativead.NativeAdView
         android:visibility="gone"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:id="@+id/unifiedNativeAd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

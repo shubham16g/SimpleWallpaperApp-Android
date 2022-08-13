@@ -70,9 +70,11 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int extraPadding = context.getResources().getDimensionPixelOffset(R.dimen.wall_card_space);
 
+        if (getItemViewType(position) == 0)
+            return;
         if (getItemViewType(position) == 2) {
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
             layoutParams.setFullSpan(true);
@@ -101,32 +103,13 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             return;
         }
 
-        int top;
-        if (position == 0 || position == 1)
-            top = extraPadding;
-        else
-            top = 0;
-        if (position % 2 == 0) {
-            holder.itemView.setPadding(extraPadding, top, 0, 0);
-        } else {
-            holder.itemView.setPadding(0, top, extraPadding, 0);
-        }
-        if (getItemViewType(position) == 0)
-            return;
-
-
         WallsPOJO pojo = list.get(position);
         Glide.with(context).load(pojo.getPreviewUrl()).thumbnail(0.3f).into(holder.imageView);
         holder.title.setText(pojo.getName());
-        holder.card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getItemViewType(position) == 0)
-                    return;
-                Intent i = new Intent(context, WallpaperActivity.class);
-                i.putExtra("pojo", list.get(position));
-                context.startActivity(i);
-            }
+        holder.card.setOnClickListener(view -> {
+            Intent i = new Intent(context, WallpaperActivity.class);
+            i.putExtra("pojo", pojo);
+            context.startActivity(i);
         });
 
         handleHeart(position, pojo.getUrl(), holder.heartImage);
