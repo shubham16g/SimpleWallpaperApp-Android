@@ -1,4 +1,4 @@
-package com.wallpaperapp.com.fragments;
+package com.cleanwallpaper.app.fragments;
 
 import android.os.Bundle;
 
@@ -17,10 +17,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.wallpaperapp.com.R;
-import com.wallpaperapp.com.utils.SQLHelper;
-import com.wallpaperapp.com.adapters.WallsAdapter;
-import com.wallpaperapp.com.models.WallsPOJO;
+import com.cleanwallpaper.app.R;
+import com.cleanwallpaper.app.utils.SQLHelper;
+import com.cleanwallpaper.app.adapters.WallsAdapter;
+import com.cleanwallpaper.app.models.WallsPOJO;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.cleanwallpaper.app;
 
 import org.junit.Test;
 

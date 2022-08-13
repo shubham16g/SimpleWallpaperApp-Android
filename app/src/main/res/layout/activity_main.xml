@@ -21,7 +21,7 @@
 
         <fragment
             android:id="@+id/wallsFragment"
-            android:name="com.wallpaperapp.com.fragments.WallsFragment"
+            android:name="com.cleanwallpaper.app.fragments.WallsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottomNav"
@@ -30,7 +30,7 @@
 
         <fragment
             android:id="@+id/categoryFragment"
-            android:name="com.wallpaperapp.com.fragments.CategoryFragment"
+            android:name="com.cleanwallpaper.app.fragments.CategoryFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottomNav"
@@ -39,7 +39,7 @@
 
         <fragment
             android:id="@+id/favoriteFragment"
-            android:name="com.wallpaperapp.com.fragments.WallsFragment"
+            android:name="com.cleanwallpaper.app.fragments.WallsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottomNav"

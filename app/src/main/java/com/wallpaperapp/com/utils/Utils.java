@@ -1,4 +1,4 @@
-package com.wallpaperapp.com.utils;
+package com.cleanwallpaper.app.utils;
 
 import android.app.Activity;
 import android.view.View;

@@ -1,4 +1,4 @@
-package com.wallpaperapp.com.activities;
+package com.cleanwallpaper.app.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.wallpaperapp.com.R;
-import com.wallpaperapp.com.utils.SQLHelper;
-import com.wallpaperapp.com.utils.Utils;
-import com.wallpaperapp.com.fragments.CategoryFragment;
-import com.wallpaperapp.com.fragments.WallsFragment;
+import com.cleanwallpaper.app.R;
+import com.cleanwallpaper.app.utils.SQLHelper;
+import com.cleanwallpaper.app.utils.Utils;
+import com.cleanwallpaper.app.fragments.CategoryFragment;
+import com.cleanwallpaper.app.fragments.WallsFragment;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.wallpaperapp.com;
+package com.cleanwallpaper.app;
 
 import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatDelegate;

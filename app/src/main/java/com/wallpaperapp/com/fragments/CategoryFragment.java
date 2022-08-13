@@ -1,4 +1,4 @@
-package com.wallpaperapp.com.fragments;
+package com.cleanwallpaper.app.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,10 +9,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wallpaperapp.com.adapters.CategoryAdapter;
-import com.wallpaperapp.com.models.CategoryPOJO;
-import com.wallpaperapp.com.R;
-import com.wallpaperapp.com.utils.SQLHelper;
+import com.cleanwallpaper.app.adapters.CategoryAdapter;
+import com.cleanwallpaper.app.models.CategoryPOJO;
+import com.cleanwallpaper.app.R;
+import com.cleanwallpaper.app.utils.SQLHelper;
 
 import java.util.ArrayList;
 

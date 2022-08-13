@@ -19,7 +19,7 @@
         android:layout_below="@id/toolbar"
         android:layout_above="@id/adView"
         android:id="@+id/moreFragment"
-        android:name="com.wallpaperapp.com.fragments.WallsFragment"
+        android:name="com.cleanwallpaper.app.fragments.WallsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_reycler" />
