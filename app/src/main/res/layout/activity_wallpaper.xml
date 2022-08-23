@@ -37,9 +37,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:navigationIcon="@drawable/ic_baseline_arrow_back_light_24"
-        app:subtitle="Hello"
         app:subtitleTextColor="@color/colorDullWhite"
-        app:title="Hello"
         app:titleTextColor="@color/colorWhite" />
 
     <LinearLayout

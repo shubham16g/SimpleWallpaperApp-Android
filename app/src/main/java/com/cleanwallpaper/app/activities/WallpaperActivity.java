@@ -104,8 +104,8 @@ public class WallpaperActivity extends AppCompatActivity {
         pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
         setupBottomNav();
 
-        toolbar.setTitle(pojo.getName());
-        toolbar.setSubtitle(pojo.getCategories());
+//        toolbar.setTitle(pojo.getName());
+//        toolbar.setSubtitle(pojo.getCategories());
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
