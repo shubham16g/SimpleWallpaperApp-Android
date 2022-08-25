@@ -17,4 +17,6 @@ This is a simple demo wallpaper app which contains wallpaper links (json file) i
     <img src="screenshots/wall.png" alt="Question Page" width="220">
     <img src="screenshots/category_banner.png" alt="Game Over" width="220">
     <img src="screenshots/settings.png" alt="Game Over" width="220">
+    <img src="screenshots/int_ad.png" alt="Game Over" width="220">
+    <img src="screenshots/light.png" alt="Game Over" width="220">
 </p>
