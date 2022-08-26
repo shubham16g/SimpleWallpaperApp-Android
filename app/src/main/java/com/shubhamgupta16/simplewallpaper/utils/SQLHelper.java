@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.utils;
+package com.shubhamgupta16.simplewallpaper.utils;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -9,8 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.cleanwallpaper.app.models.CategoryPOJO;
-import com.cleanwallpaper.app.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
+import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
 

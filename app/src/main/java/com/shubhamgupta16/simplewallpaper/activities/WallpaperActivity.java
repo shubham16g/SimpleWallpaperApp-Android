@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.activities;
+package com.shubhamgupta16.simplewallpaper.activities;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -52,9 +52,9 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.cleanwallpaper.app.R;
-import com.cleanwallpaper.app.utils.SQLHelper;
-import com.cleanwallpaper.app.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.R;
+import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.io.File;
 import java.io.FileOutputStream;

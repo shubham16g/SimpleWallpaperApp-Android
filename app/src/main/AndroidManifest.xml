@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.cleanwallpaper.app">
+    package="com.shubhamgupta16.simplewallpaper">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".Application"
+        android:name="com.shubhamgupta16.simplewallpaper.Application"
         android:allowBackup="true"
         android:icon="@drawable/ion"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
-        <activity android:name=".activities.SplashActivity"
+        <activity android:name="com.shubhamgupta16.simplewallpaper.activities.SplashActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme"
@@ -40,21 +40,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="com.shubhamgupta16.simplewallpaper.activities.SettingsActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activities.MoreWallsActivity"
+        <activity android:name="com.shubhamgupta16.simplewallpaper.activities.MoreWallsActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.MainActivity"
+        <activity android:name="com.shubhamgupta16.simplewallpaper.activities.MainActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden">
         </activity>
-        <activity android:name=".activities.WallpaperActivity"
+        <activity android:name="com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />

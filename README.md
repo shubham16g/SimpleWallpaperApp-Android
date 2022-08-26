@@ -1,12 +1,19 @@
-# SimpleWallpaperApp-Android
-This is a simple demo wallpaper app which contains wallpaper links (json file) in assets folder.
+# SimpleWallpaperApp - Android
+This is a simple demo wallpaper 🏞️ app which contains wallpaper links 🔗 (json file) in assets 📂 folder.
 
-- No Server Required
-- Admob (Native, Banner, Interstial) Ad
-- Download Wallpaper
-- Sort by Collections
-- Clean UI
-- Light/Dark Theme
+- No Server 🗃️ Required
+- Admob 💵 (Native, Banner, Interstial) Ad
+- Download Wallpaper ⬇️
+- Sort 🔎 by Collections
+- Clean UI 💚
+- Light/Dark 🌗 Theme
+
+## Installation
+- Clone this repository and sync gradle
+- Create a copy of `secret.example.properties` with name `secret.properties` in root directory
+- Make changes in `secret.properties` based on your credentials
+- Build the project
+- Run on your device
 
 ## Screenshots
 <p float="left">

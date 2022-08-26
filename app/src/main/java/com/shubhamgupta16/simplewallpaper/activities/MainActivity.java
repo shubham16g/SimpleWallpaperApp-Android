@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.activities;
+package com.shubhamgupta16.simplewallpaper.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.cleanwallpaper.app.R;
-import com.cleanwallpaper.app.utils.SQLHelper;
-import com.cleanwallpaper.app.utils.Utils;
-import com.cleanwallpaper.app.fragments.CategoryFragment;
-import com.cleanwallpaper.app.fragments.WallsFragment;
+import com.shubhamgupta16.simplewallpaper.R;
+import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.utils.Utils;
+import com.shubhamgupta16.simplewallpaper.fragments.CategoryFragment;
+import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
 
 public class MainActivity extends AppCompatActivity {
 

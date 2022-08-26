@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.adapters;
+package com.shubhamgupta16.simplewallpaper.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.cleanwallpaper.app.models.CategoryPOJO;
-import com.cleanwallpaper.app.activities.MoreWallsActivity;
-import com.cleanwallpaper.app.R;
+import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
+import com.shubhamgupta16.simplewallpaper.activities.MoreWallsActivity;
+import com.shubhamgupta16.simplewallpaper.R;
 
 import java.util.List;
 

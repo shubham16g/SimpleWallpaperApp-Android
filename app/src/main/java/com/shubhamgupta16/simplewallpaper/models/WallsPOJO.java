@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.models;
+package com.shubhamgupta16.simplewallpaper.models;
 
 import java.io.Serializable;
 

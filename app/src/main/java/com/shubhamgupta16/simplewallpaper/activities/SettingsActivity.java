@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.activities;
+package com.shubhamgupta16.simplewallpaper.activities;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -13,7 +13,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.cleanwallpaper.app.R;
+import com.shubhamgupta16.simplewallpaper.R;
 
 
 public class SettingsActivity extends AppCompatActivity {

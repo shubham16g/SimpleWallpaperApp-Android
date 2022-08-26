@@ -1,4 +1,4 @@
-package com.cleanwallpaper.app.adapters;
+package com.shubhamgupta16.simplewallpaper.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,10 +23,10 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.cleanwallpaper.app.R;
-import com.cleanwallpaper.app.utils.SQLHelper;
-import com.cleanwallpaper.app.activities.WallpaperActivity;
-import com.cleanwallpaper.app.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.R;
+import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity;
+import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.List;
 
