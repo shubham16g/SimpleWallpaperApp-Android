@@ -9,6 +9,7 @@ def get_photo_full_url(tweet):
 
 fullurl = []
 
+# TODO : ADD USERNAME & FROM DATA HERE
 for i,tweet in enumerate(twitterScraper.TwitterSearchScraper('from:ClashHeroes since:2021-02-04').get_items()):
     if i>1000:
         break
