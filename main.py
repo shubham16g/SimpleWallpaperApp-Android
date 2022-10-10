@@ -15,5 +15,32 @@ for i,tweet in enumerate(twitterScraper.TwitterSearchScraper('from:ClashHeroes s
     fullurl.append(get_photo_full_url(tweet))
     fullurl = list(filter(None, fullurl))
 
-with open('sample.json', 'w') as f:
-    json.dump(fullurl, f)
+# with open('wallpapers.json', 'w') as f:
+#     json.dump(fullurl, f)
+
+# format to output json
+# {
+#     [
+#         "name" : #assign a int in order from 1 to 1000
+#         "url" : #fullurl
+#         "previewUrl" : #fullurl + '=small'
+#         "categories" : # give constant value "Clash Royale"
+#     ]
+# }
+
+with open('wallpapers.json', 'w') as f:
+    f.write('{\n')
+    f.write('    "wallpapers": [\n')
+    for i, url in enumerate(fullurl):
+        f.write('        {\n')
+        f.write('            "name": "' + str(i+1) + '",\n')
+        f.write('            "url": "' + url + '",\n')
+        f.write('            "previewUrl": "' + url + '=small",\n')
+        f.write('            "categories": "Clash Royale"\n')
+        f.write('        }')
+        if i != len(fullurl)-1:
+            f.write(',\n')
+        else:
+            f.write('\n')
+    f.write('    ]\n')
+    f.write('}')
