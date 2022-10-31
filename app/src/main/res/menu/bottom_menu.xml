@@ -3,9 +3,9 @@
     <item android:title="Wallpapers"
         android:id="@+id/action_walls"
         android:icon="@drawable/ic_baseline_wallpaper_24"/>
-	<item android:title="Collections"
+	<!-- <item android:title="Collections"
         android:id="@+id/action_category"
-        android:icon="@drawable/ic_baseline_collections_24"/>	
+        android:icon="@drawable/ic_baseline_collections_24"/>	 -->
     <item android:title="Favorites"
         android:id="@+id/action_favorite"
         android:icon="@drawable/ic_baseline_favorite_border_24"/>

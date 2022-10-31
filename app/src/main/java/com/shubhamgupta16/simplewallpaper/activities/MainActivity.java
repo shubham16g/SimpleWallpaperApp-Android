@@ -170,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_walls:
                         switchFrag(0, true);
                         break;
-                    case R.id.action_category:
-                        switchFrag(1, true);
-                        break;
+                    // case R.id.action_category:
+                    //     switchFrag(1, true);
+                    //     break;
                     case R.id.action_favorite:
                         switchFrag(2, true);
                         break;
