@@ -27,6 +27,7 @@ android {
         resValue("string", "splash_interstitial_id", secretProperties['SPLASH_INTERSTITIAL_ID'])
         resValue("string", "set_wallpaper_interstitial_id", secretProperties['SET_WALLPAPER_INTERSTITIAL_ID'])
         resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
+        resValue("string", "rewarded_ad_id", secretProperties['REWARDED_AD_ID'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
