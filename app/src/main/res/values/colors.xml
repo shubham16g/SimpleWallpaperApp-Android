@@ -6,6 +6,7 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorTextPrimary">#333</color>
     <color name="colorHeart">#F32C3D</color>
+    <color name="colorPremium">#F8BE10</color>
     <color name="colorBackground">#f9f9f9</color>
     <color name="colorWhite">#fff</color>
     <color name="colorDullWhite">#eee</color>
