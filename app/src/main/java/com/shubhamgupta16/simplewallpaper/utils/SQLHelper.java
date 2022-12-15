@@ -15,7 +15,7 @@ import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import java.util.ArrayList;
 
 public class SQLHelper extends SQLiteOpenHelper {
-    public static final String DB_NAME = "myWalls2";
+    public static final String DB_NAME = "myWalls3";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
     private static final int PER_PAGE_ITEM = 16;
@@ -141,7 +141,7 @@ public class SQLHelper extends SQLiteOpenHelper {
                 break;
             case TYPE_QUERY:
                 if (string == null) return null;
-                pagesCountQuery = " WHERE name LIKE '%" + string + "%'";
+                pagesCountQuery = " WHERE name LIKE '%" + string + "%' OR categories LIKE '%" + string + "%'";
                 break;
             case TYPE_FAVORITE_QUERY:
                 if (string == null) return null;
