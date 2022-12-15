@@ -121,11 +121,12 @@ public class WallpaperActivity extends AppCompatActivity {
             }
         });
 
-        photoView.setZoomable(false);
+        photoView.setTag(false);
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                if (!photoView.isZoomable()) {
+//                photoView.setCropToPadding(true);
+                if (photoView.getTag().equals(false)) {
                     photoView.setImageBitmap(fastBlur(WallpaperActivity.this, resource));
                 }
             }
@@ -152,7 +153,7 @@ public class WallpaperActivity extends AppCompatActivity {
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 imageBitmap = resource;
                 photoView.setImageBitmap(imageBitmap);
-                photoView.setZoomable(true);
+                photoView.setTag(true);
                 progressBar.setVisibility(View.GONE);
             }
 
