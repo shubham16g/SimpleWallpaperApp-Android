@@ -114,6 +114,10 @@ public class WallpaperActivity extends AppCompatActivity {
         });
         initInterstitial();
 
+        if (pojo.isPremium()){
+            findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
+        }
+
         photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
             @Override
             public void onPhotoTap(ImageView view, float x, float y) {

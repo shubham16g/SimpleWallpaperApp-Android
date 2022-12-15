@@ -38,7 +38,22 @@
         android:background="@android:color/transparent"
         app:navigationIcon="@drawable/ic_baseline_arrow_back_light_24"
         app:subtitleTextColor="@color/colorDullWhite"
-        app:titleTextColor="@color/colorWhite" />
+        app:titleTextColor="@color/colorWhite" >
+
+        <ImageView
+            android:id="@+id/premiumImage"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="end"
+            android:visibility="gone"
+            android:layout_marginEnd="5dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/image_card"
+            android:focusable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_crown_24" />
+    </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
         android:id="@+id/bottomButtonNav"
