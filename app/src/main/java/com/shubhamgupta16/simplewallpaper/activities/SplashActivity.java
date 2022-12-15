@@ -106,6 +106,7 @@ public class SplashActivity extends AppCompatActivity {
                         object.getString("previewUrl"),
                         object.getString("url"),
                         object.getString("categories"),
+                        object.optBoolean("premium", false),
                         false
                 );
                 sqlHelper.insertWallpaper(pojo);

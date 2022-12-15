@@ -11,7 +11,7 @@
     "url": "https://images.unsplash.com/photo-1557672172-298e090bd0f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3R8ZW58MHx8fHwxNjUwMjE1NTQx&ixlib=rb-1.2.1&q=80&w=1080",
     "previewUrl": "https://images.unsplash.com/photo-1557672172-298e090bd0f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3R8ZW58MHx8fHwxNjUwMjE1NTQx&ixlib=rb-1.2.1&q=80&w=400",
     "categories": "Abstract, Art",
-    "premium": false
+    "premium": true
   },
   {
     "name": "Moving Stars",
@@ -32,7 +32,7 @@
     "url": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHw2M3x8YWJzdHJhY3R8ZW58MHx8fHwxNjUwMTIxNzMw&ixlib=rb-1.2.1&q=80&w=1080",
     "previewUrl": "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHw2M3x8YWJzdHJhY3R8ZW58MHx8fHwxNjUwMTIxNzMw&ixlib=rb-1.2.1&q=80&w=400",
     "categories": "Art, Illustration, Texture",
-    "premium": false
+    "premium": true
   },
   {
     "name": "Wave Sunset Reflection",
@@ -137,7 +137,7 @@
     "url": "https://images.unsplash.com/photo-1528645944521-c061770de25d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHwxMTd8fGZlc3RpdmFsfGVufDB8fHx8MTY0NTI5MDM4Mg&ixlib=rb-1.2.1&q=80&w=1080",
     "previewUrl": "https://images.unsplash.com/photo-1528645944521-c061770de25d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTY4MjV8MHwxfHNlYXJjaHwxMTd8fGZlc3RpdmFsfGVufDB8fHx8MTY0NTI5MDM4Mg&ixlib=rb-1.2.1&q=80&w=400",
     "categories": "Alone",
-    "premium": false
+    "premium": true
   },
   {
     "name": "Tower Lights Decorative Building",

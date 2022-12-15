@@ -15,7 +15,7 @@ import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import java.util.ArrayList;
 
 public class SQLHelper extends SQLiteOpenHelper {
-    public static final String DB_NAME = "myWalls3";
+    public static final String DB_NAME = "myWalls1";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
     private static final int PER_PAGE_ITEM = 16;
@@ -33,7 +33,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(url VARCHAR PRIMARY KEY, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, favorite INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(url VARCHAR PRIMARY KEY, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, favorite INTEGER);");
         db.execSQL("CREATE TABLE IF NOT EXISTS " + CATEGORIES + "(name VARCHAR PRIMARY KEY, preview1 VARCHAR, preview2 VARCHAR, preview3 VARCHAR);");
     }
 
@@ -62,6 +62,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         contentValues.put("previewUrl", pojo.getPreviewUrl());
         contentValues.put("name", pojo.getName());
         contentValues.put("categories", pojo.getCategories());
+        contentValues.put("premium", pojo.isPremium() ? 1 : 0);
         if (checkAvailableWallpaper(pojo.getUrl())) {
             db.update(WALLPAPERS, contentValues, "url='" + pojo.getUrl() + "'", null);
         } else {
@@ -111,7 +112,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor;
-                cursor = db.rawQuery("SELECT count(*) FROM " + WALLPAPERS + " WHERE categories LIKE '%" + name + "%'", null);
+        cursor = db.rawQuery("SELECT count(*) FROM " + WALLPAPERS + " WHERE categories LIKE '%" + name + "%'", null);
         if (cursor.moveToNext()) {
             return cursor.getInt(0);
         } else {
@@ -160,7 +161,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT * FROM " + WALLPAPERS + extras + " LIMIT " + offset + ", " + PER_PAGE_ITEM, null);
         while (cursor.moveToNext()) {
-            list.add(new WallsPOJO(cursor.getString(2), cursor.getString(1), cursor.getString(0), cursor.getString(3), cursor.getInt(4) != 0));
+            list.add(new WallsPOJO(cursor.getString(2), cursor.getString(1), cursor.getString(0), cursor.getString(3), cursor.getInt(4) != 0, cursor.getInt(5) != 0));
         }
         return list;
     }

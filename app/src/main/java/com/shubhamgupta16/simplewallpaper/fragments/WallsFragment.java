@@ -115,10 +115,10 @@ public class WallsFragment extends Fragment {
         fetchWalls(1);
     }
 
-    private void setErrorLayout(){
+    private void setErrorLayout() {
         ImageView errorImage = errorLayout.findViewById(R.id.errorImage);
         TextView errorTitle = errorLayout.findViewById(R.id.errorTitle);
-        if (type == SQLHelper.TYPE_FAVORITE || type == SQLHelper.TYPE_FAVORITE_QUERY){
+        if (type == SQLHelper.TYPE_FAVORITE || type == SQLHelper.TYPE_FAVORITE_QUERY) {
             errorImage.setImageResource(R.drawable.no_fav);
             errorTitle.setText(R.string.no_fav);
         } else {
@@ -127,8 +127,8 @@ public class WallsFragment extends Fragment {
         }
     }
 
-    private void handleErrorLayout(){
-        if (list.isEmpty()){
+    private void handleErrorLayout() {
+        if (list.isEmpty()) {
             errorLayout.setVisibility(View.VISIBLE);
         } else {
             errorLayout.setVisibility(View.GONE);
@@ -161,9 +161,9 @@ public class WallsFragment extends Fragment {
         list.addAll(walls);
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
 //            Toast.makeText(getContext(), maxPage + "", Toast.LENGTH_SHORT).show();
-            list.add(new WallsPOJO(null, null, "ad", null, false));
-            list.add(new WallsPOJO(null, null, null, null, false));
-            list.add(new WallsPOJO(null, null, null, null, false));
+            list.add(new WallsPOJO(null, null, "ad", null, false, false));
+            list.add(new WallsPOJO(null, null, null, null, false, false));
+            list.add(new WallsPOJO(null, null, null, null, false, false));
         }
 
         lastFetch = page;
