@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.WallpaperManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,12 +16,11 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -55,12 +53,10 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.utils.Utils;
+import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
-
 
 public class WallpaperActivity extends AppCompatActivity {
 
@@ -73,6 +69,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private SQLHelper sqlHelper;
     private WallsPOJO pojo;
     private InterstitialAd mInterstitialAd;
+    private boolean isLockedForPremium;
 
 
     @Override
@@ -114,8 +111,11 @@ public class WallpaperActivity extends AppCompatActivity {
         });
         initInterstitial();
 
-        if (pojo.isPremium()){
+        if (pojo.isPremium()) {
+            isLockedForPremium = true;
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
+        } else {
+            isLockedForPremium = false;
         }
 
         photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
@@ -199,23 +199,24 @@ public class WallpaperActivity extends AppCompatActivity {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+//        save button click
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (isStoragePermissionGranted()) {
-                        saveImage(imageBitmap, toolbar.getTitle().toString());
-                    }
-                } else {
-                    saveImage(imageBitmap, toolbar.getTitle().toString());
+                if (isLockedForPremium) {
+                    return;
                 }
+                saveImage();
             }
         });
 
+//        apply button click
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (isLockedForPremium) {
+                    return;
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     String[] options = {"Home screen", "Lock screen", "Both"};
                     AlertDialog.Builder builder = new AlertDialog.Builder(WallpaperActivity.this);
@@ -223,12 +224,12 @@ public class WallpaperActivity extends AppCompatActivity {
                     builder.setItems(options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            new setWallpaper().execute(which + 1);
+                            applyWallpaper(which + 1);
                         }
                     });
                     builder.show();
                 } else {
-                    new setWallpaper().execute(0);
+                    applyWallpaper(0);
                 }
             }
         });
@@ -265,7 +266,7 @@ public class WallpaperActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            saveImage(imageBitmap, pojo.getName());
+            saveImage();
         }
     }
 
@@ -282,42 +283,19 @@ public class WallpaperActivity extends AppCompatActivity {
         return bitmap;
     }
 
-    public static void addImageToGallery(final String filePath, final Context context) {
-
-        ContentValues values = new ContentValues();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+    private void saveImage() {
+        if (imageBitmap == null || pojo == null) return;
+        Log.d("TAG", "saveImage: called");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isStoragePermissionGranted())
+            return;
+        final boolean isSaved = Utils.save(this, imageBitmap, getString(R.string.app_name),
+                pojo.getName().replaceAll("\\s", "_"));
+        if (isSaved){
+            Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Error while saving image.", Toast.LENGTH_SHORT).show();
         }
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        values.put(MediaStore.MediaColumns.DATA, filePath);
-
-        context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-    }
-
-
-    private void saveImage(Bitmap bitmap, String name) {
-        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root + "/" + getString(R.string.app_name));
-        if (!myDir.exists())
-            myDir.mkdirs();
-        Random random = new Random();
-        String fname = name + "_" + random.nextInt(100000) + ".jpg";
-        File file = new File(myDir, fname);
-
-        if (file.exists())
-            file.delete();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-            Toast.makeText(this, "Image saved successfully!", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        addImageToGallery(file.getPath(), this);
-
     }
 
     private void showSysUI() {
@@ -385,68 +363,10 @@ public class WallpaperActivity extends AppCompatActivity {
         return result;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class setWallpaper extends AsyncTask<Integer, Integer, Boolean> {
-        private Bitmap getBitmap(Drawable drawable) {
-            if (drawable instanceof BitmapDrawable) {
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-                if (bitmapDrawable.getBitmap() != null) {
-                    return bitmapDrawable.getBitmap();
-                }
-            }
-            Bitmap bitmap;
-            if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-            } else {
-                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            }
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-            return bitmap;
-        }
-
-        @Override
-        protected Boolean doInBackground(Integer... integers) {
-            WallpaperManager manager = WallpaperManager.getInstance(getApplicationContext());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (integers[0] == 1) {
-                    try {
-                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_SYSTEM);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (integers[0] == 2) {
-                    try {
-                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    try {
-                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_SYSTEM);
-                        manager.setBitmap(getBitmap(photoView.getDrawable()), null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            } else {
-                if (integers[0] == 0) {
-                    try {
-                        manager.setBitmap(getBitmap(photoView.getDrawable()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
+    private void applyWallpaper(int where){
+        progressBar.setVisibility(View.VISIBLE);
+        WallpaperSetter.apply(this, imageBitmap, where, b -> {
+            progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(WallpaperActivity.this, WallpaperActivity.class);
             intent.putExtra("pojo", pojo);
             startActivity(intent);
@@ -454,6 +374,6 @@ public class WallpaperActivity extends AppCompatActivity {
             Toast.makeText(WallpaperActivity.this, "Successfully Applied.", Toast.LENGTH_SHORT).show();
             finish();
             showInterstitial();
-        }
+        });
     }
 }
