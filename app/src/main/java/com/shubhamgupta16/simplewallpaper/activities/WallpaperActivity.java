@@ -284,17 +284,20 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     private void askOrApplyWallpaper() {
+        View v =  getLayoutInflater().inflate(R.layout.layout_set_on, null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            String[] options = {"Home screen", "Lock screen", "Both"};
-            AlertDialog.Builder builder = new AlertDialog.Builder(WallpaperActivity.this);
-            builder.setTitle("Apply on");
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    applyWallpaper(which + 1);
-                }
+            AlertDialog dialog = new AlertDialog.Builder(WallpaperActivity.this)
+                    .setView(v).create();
+            v.findViewById(R.id.on_home_screen_btn).setOnClickListener(view -> {
+               applyWallpaper(1);
             });
-            builder.show();
+            v.findViewById(R.id.on_lock_screen_btn).setOnClickListener(view -> {
+                applyWallpaper(2);
+            });
+            v.findViewById(R.id.on_both_screen_btn).setOnClickListener(view -> {
+                applyWallpaper(3);
+            });
+            dialog.show();
         } else {
             applyWallpaper(0);
         }

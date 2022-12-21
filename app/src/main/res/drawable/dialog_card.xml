@@ -4,6 +4,6 @@
     android:insetRight="20dp">
     <shape>
         <solid android:color="@color/colorDialogBackground"/>
-        <corners android:radius="10dp"/>
+        <corners android:radius="14dp"/>
     </shape>
 </inset>

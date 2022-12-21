@@ -16,4 +16,8 @@
     <string name="no_thanks">No Thanks</string>
     <string name="yes_watch">Yes Watch</string>
     <string name="success_applied">Successfully Applied.</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="both">Both</string>
+    <string name="set_wallpaper_on">Set Wallpaper on</string>
 </resources>
