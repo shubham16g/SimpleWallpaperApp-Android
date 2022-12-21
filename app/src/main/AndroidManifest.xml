@@ -55,6 +55,7 @@
         </activity>
         <activity android:name="com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity"
             android:exported="true"
+            android:theme="@style/WallpaperTheme"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
     </application>

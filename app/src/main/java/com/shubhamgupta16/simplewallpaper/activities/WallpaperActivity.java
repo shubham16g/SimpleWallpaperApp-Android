@@ -4,16 +4,13 @@ import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.renderscript.Allocation;
@@ -22,7 +19,6 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -34,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -45,20 +42,23 @@ import com.bumptech.glide.request.transition.Transition;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;
 
-import java.io.IOException;
-
 public class WallpaperActivity extends AppCompatActivity {
+
+    private static final String TAG = "WallpaperActivity";
 
     private Bitmap imageBitmap;
     private PhotoView photoView;
@@ -69,7 +69,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private SQLHelper sqlHelper;
     private WallsPOJO pojo;
     private InterstitialAd mInterstitialAd;
-    private boolean isLockedForPremium;
+    private RewardedAd mRewardedAd;
 
 
     @Override
@@ -83,8 +83,10 @@ public class WallpaperActivity extends AppCompatActivity {
             return;
         }
         mDecorView = getWindow().getDecorView();
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.parseColor("#01FFFFFF"));
+
         showSysUI();
 
         toolbar = findViewById(R.id.full_view_toolbar);
@@ -112,10 +114,7 @@ public class WallpaperActivity extends AppCompatActivity {
         initInterstitial();
 
         if (pojo.isPremium()) {
-            isLockedForPremium = true;
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
-        } else {
-            isLockedForPremium = false;
         }
 
         photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
@@ -203,7 +202,13 @@ public class WallpaperActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isLockedForPremium) {
+                if (isStoragePermissionNotGranted()){
+                    ActivityCompat.requestPermissions(WallpaperActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    return;
+                }
+                if (pojo.isPremium()) {
+                    showWatchAdDialog(true);
                     return;
                 }
                 saveImage();
@@ -214,23 +219,11 @@ public class WallpaperActivity extends AppCompatActivity {
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isLockedForPremium) {
+                if (pojo.isPremium()) {
+                    showWatchAdDialog(false);
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    String[] options = {"Home screen", "Lock screen", "Both"};
-                    AlertDialog.Builder builder = new AlertDialog.Builder(WallpaperActivity.this);
-                    builder.setTitle("Apply on");
-                    builder.setItems(options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            applyWallpaper(which + 1);
-                        }
-                    });
-                    builder.show();
-                } else {
-                    applyWallpaper(0);
-                }
+                askOrApplyWallpaper();
             }
         });
         favoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -247,18 +240,11 @@ public class WallpaperActivity extends AppCompatActivity {
         });
     }
 
-    public boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            } else {
-
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                return false;
-            }
+    public boolean isStoragePermissionNotGranted() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -286,15 +272,31 @@ public class WallpaperActivity extends AppCompatActivity {
     private void saveImage() {
         if (imageBitmap == null || pojo == null) return;
         Log.d("TAG", "saveImage: called");
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isStoragePermissionGranted())
+        if (isStoragePermissionNotGranted())
             return;
         final boolean isSaved = Utils.save(this, imageBitmap, getString(R.string.app_name),
                 pojo.getName().replaceAll("\\s", "_"));
-        if (isSaved){
+        if (isSaved) {
             Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Error while saving image.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void askOrApplyWallpaper() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String[] options = {"Home screen", "Lock screen", "Both"};
+            AlertDialog.Builder builder = new AlertDialog.Builder(WallpaperActivity.this);
+            builder.setTitle("Apply on");
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    applyWallpaper(which + 1);
+                }
+            });
+            builder.show();
+        } else {
+            applyWallpaper(0);
         }
     }
 
@@ -356,6 +358,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
     private int getStatusBarHeight() {
         int result = 0;
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             result = getResources().getDimensionPixelSize(resourceId);
@@ -363,17 +366,62 @@ public class WallpaperActivity extends AppCompatActivity {
         return result;
     }
 
-    private void applyWallpaper(int where){
+    private void applyWallpaper(int where) {
         progressBar.setVisibility(View.VISIBLE);
-        WallpaperSetter.apply(this, imageBitmap, where, b -> {
+        WallpaperSetter.apply(this, photoView.getDrawable(), where, b -> {
             progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(WallpaperActivity.this, WallpaperActivity.class);
             intent.putExtra("pojo", pojo);
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            Toast.makeText(WallpaperActivity.this, "Successfully Applied.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WallpaperActivity.this, getString(R.string.success_applied), Toast.LENGTH_SHORT).show();
             finish();
             showInterstitial();
         });
+    }
+
+    private void showWatchAdDialog(boolean isForSaveImage) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.download_premium_title)
+                .setPositiveButton(R.string.yes_watch, (dialog1, which) -> {
+                    loadRewardedAd(isForSaveImage);
+                })
+                .setNegativeButton(R.string.no_thanks, null)
+                .create().show();
+    }
+
+    private void loadRewardedAd(boolean isForSaveImage) {
+        progressBar.setVisibility(View.VISIBLE);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getString(R.string.rewarded_ad_id),
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(WallpaperActivity.this, "Failed to load Ad.", Toast.LENGTH_SHORT).show();
+                        mRewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                        progressBar.setVisibility(View.GONE);
+                        mRewardedAd = rewardedAd;
+                        showRewardedAd(isForSaveImage);
+                    }
+                });
+    }
+
+    private void showRewardedAd(boolean isForSaveImage) {
+        if (mRewardedAd != null) {
+            mRewardedAd.show(this, rewardItem -> {
+                if (isForSaveImage) {
+                    saveImage();
+                } else {
+                    askOrApplyWallpaper();
+                }
+            });
+        } else {
+            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        }
     }
 }

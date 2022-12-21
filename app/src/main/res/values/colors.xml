@@ -8,6 +8,7 @@
     <color name="colorHeart">#F32C3D</color>
     <color name="colorPremium">#F8BE10</color>
     <color name="colorBackground">#f9f9f9</color>
+    <color name="colorDialogBackground">#EEF1F3</color>
     <color name="colorWhite">#fff</color>
     <color name="colorDullWhite">#eee</color>
     <color name="colorTextSecondary">#555</color>
