@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#0B0D10</color>
     <color name="colorTextPrimary">#fff</color>
     <color name="colorBackground">#22232C</color>
+    <color name="colorDialogBackground">#313742</color>
     <color name="colorTextSecondary">#ddd</color>
 </resources>

@@ -59,6 +59,19 @@
                 android:background="?attr/selectableItemBackground" />
 
             <ImageView
+                android:id="@+id/premiumImage"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_gravity="right"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/image_card"
+                android:focusable="true"
+                android:padding="10dp"
+                android:src="@drawable/ic_crown_24"
+                tools:ignore="RtlHardcoded" />
+
+            <ImageView
                 android:id="@+id/heartImage"
                 android:layout_width="45dp"
                 android:layout_height="45dp"

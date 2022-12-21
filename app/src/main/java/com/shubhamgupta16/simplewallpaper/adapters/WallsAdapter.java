@@ -104,6 +104,8 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         }
 
         WallsPOJO pojo = list.get(position);
+        holder.premiumImage.setVisibility(pojo.isPremium() ? View.VISIBLE : View.GONE);
+        holder.heartImage.setVisibility(pojo.isPremium() ? View.GONE : View.VISIBLE);
         Glide.with(context).load(pojo.getPreviewUrl()).thumbnail(0.3f).into(holder.imageView);
         holder.title.setText(pojo.getName());
         holder.card.setOnClickListener(view -> {
@@ -153,7 +155,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView, heartImage;
+        private ImageView imageView, heartImage, premiumImage;
         private TextView title;
         private View card;
         private NativeAdView adView;
@@ -162,6 +164,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             super(itemView);
             if (viewType == 1) {
                 heartImage = itemView.findViewById(R.id.heartImage);
+                premiumImage = itemView.findViewById(R.id.premiumImage);
                 imageView = itemView.findViewById(R.id.image);
                 title = itemView.findViewById(R.id.title);
                 card = itemView.findViewById(R.id.card);
