@@ -2,7 +2,7 @@
 This is a simple demo wallpaper 🏞️ app which contains wallpaper links 🔗 (json file) in assets 📂 folder.
 
 - No Server 🗃️ Required
-- Admob 💵 (Native, Banner, Interstial, Rewarded) Ad
+- Admob 💵 (Native, Banner, Interstitial, Rewarded) Ad
 - Download Wallpaper ⬇️
 - Sort 🔎 by Collections
 - Clean UI 💚
@@ -13,7 +13,6 @@ This is a simple demo wallpaper 🏞️ app which contains wallpaper links 🔗 
 - Create a copy of `secret.example.properties` with name `secret.properties` in root directory
 - Make changes in `secret.properties` based on your credentials
 - Make changes in `assets/wallpapers.json` and `categories.json` (optional)
-- Change package name (optional)
 - Build the project
 - Run on your device
 
