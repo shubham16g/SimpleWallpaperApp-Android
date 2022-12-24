@@ -3,7 +3,7 @@ package com.shubhamgupta16.simplewallpaper.models;
 import java.io.Serializable;
 
 public class WallsPOJO implements Serializable {
-    private String name, previewUrl, url, categories;
+    private final String name, previewUrl, url, categories;
     boolean premium;
     boolean favorite;
 

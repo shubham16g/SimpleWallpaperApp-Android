@@ -3,14 +3,12 @@ package com.shubhamgupta16.simplewallpaper.activities;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.ListPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.shubhamgupta16.simplewallpaper.R;
@@ -33,12 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> finish());
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -80,22 +73,19 @@ public class SettingsActivity extends AppCompatActivity {
                     themePref.setValue(themesLatest[2]);
                     break;
             }
-            themePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String newVal = (String) newValue;
-                    if (newVal.equals(themesLatest[0])){
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    } else if (newVal.equals(themesLatest[1])){
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    } else if (newVal.equals(themesLatest[2])){
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                    }else if (newVal.equals(themesLatest[3])){
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-                    }
-                    ((SettingsActivity) requireActivity()).getDelegate().applyDayNight();
-                    return true;
+            themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                String newVal = (String) newValue;
+                if (newVal.equals(themesLatest[0])){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                } else if (newVal.equals(themesLatest[1])){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                } else if (newVal.equals(themesLatest[2])){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                }else if (newVal.equals(themesLatest[3])){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
                 }
+                ((SettingsActivity) requireActivity()).getDelegate().applyDayNight();
+                return true;
             });
         }
     }

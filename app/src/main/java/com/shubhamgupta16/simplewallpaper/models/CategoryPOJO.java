@@ -1,8 +1,8 @@
 package com.shubhamgupta16.simplewallpaper.models;
 
 public class CategoryPOJO {
-    private String name, preview1, preview2, preview3;
-    private int wallsCount;
+    private final String name, preview1, preview2, preview3;
+    private final int wallsCount;
 
     public CategoryPOJO(String name, String preview1, String preview2, String preview3, int wallsCount) {
         this.name = name;

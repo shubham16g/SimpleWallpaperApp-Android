@@ -6,13 +6,10 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
@@ -25,19 +22,14 @@ public class MoreWallsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_more_walls);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> finish());
 
         handleAd();
 
         Intent intent = getIntent();
         FragmentManager manager = getSupportFragmentManager();
         WallsFragment wallsFragment = (WallsFragment) manager.findFragmentById(R.id.moreFragment);
-        if (intent.hasExtra("category")){
+        if (intent.hasExtra("category")) {
             String category = intent.getStringExtra("category");
             toolbar.setTitle(category);
             assert wallsFragment != null;
@@ -48,11 +40,8 @@ public class MoreWallsActivity extends AppCompatActivity {
 
     }
 
-    private void handleAd(){
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+    private void handleAd() {
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         AdView mAdView = findViewById(R.id.adView);

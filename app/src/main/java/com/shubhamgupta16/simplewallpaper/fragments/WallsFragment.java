@@ -1,5 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -59,12 +60,7 @@ public class WallsFragment extends Fragment {
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
         adapter = new WallsAdapter(getContext(), list, SQLHelper.TYPE_NONE);
-        adapter.setOnRemoveFromFavSecotion(new WallsAdapter.OnRemoveFromFavSecotion() {
-            @Override
-            public void onRemove() {
-                handleErrorLayout();
-            }
-        });
+        adapter.setOnRemoveFromFavSecotion(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -100,6 +96,7 @@ public class WallsFragment extends Fragment {
     private int type = SQLHelper.TYPE_NONE;
     private String extras;
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFragment(int type, String extras) {
         Log.d("tagtag", "set" + type);
         this.type = type;
@@ -141,12 +138,7 @@ public class WallsFragment extends Fragment {
         if (page == 1) {
             handleRes(page, sqlHelper.getWallpapers(page, type, extras));
         } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    handleRes(page, sqlHelper.getWallpapers(page, type, extras));
-                }
-            }, 1000);
+            new Handler().postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
         }
 
     }
@@ -181,7 +173,6 @@ public class WallsFragment extends Fragment {
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();
-
     }
 
 }

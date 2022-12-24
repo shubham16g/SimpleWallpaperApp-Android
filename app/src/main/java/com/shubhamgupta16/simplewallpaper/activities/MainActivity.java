@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        handleAd();
 
         init();
     }
@@ -88,39 +87,36 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        menu.findItem(R.id.action_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            }
+        menu.findItem(R.id.action_settings).setOnMenuItemClickListener(menuItem -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
         });
 
-        menu.findItem(R.id.action_policy).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(getString(R.string.privicy_policy)));
-                startActivity(i);
-                return true;
-            }
+        menu.findItem(R.id.action_policy).setOnMenuItemClickListener(menuItem -> {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(getString(R.string.privicy_policy)));
+            startActivity(i);
+            return true;
         });
 
         searchItem = menu.findItem(R.id.action_search);
         searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+            public boolean onMenuItemActionExpand(@NonNull MenuItem menuItem) {
                 return true;
             }
 
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+            public boolean onMenuItemActionCollapse(@NonNull MenuItem menuItem) {
                 closeSearch();
                 return true;
             }
         });
         final SearchView searchView = (SearchView) searchItem.getActionView();
+        if (searchView == null) {
+            return super.onCreateOptionsMenu(menu);
+        }
         searchView.setIconifiedByDefault(false);
         switch (currentFragPos){
             case 0:
@@ -163,22 +159,15 @@ public class MainActivity extends AppCompatActivity {
         switchFrag(0, false);
 
         BottomNavigationView bNav = findViewById(R.id.bottomNav);
-        bNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_walls:
-                        switchFrag(0, true);
-                        break;
-                    case R.id.action_category:
-                        switchFrag(1, true);
-                        break;
-                    case R.id.action_favorite:
-                        switchFrag(2, true);
-                        break;
-                }
-                return true;
-            }
+        bNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_walls)
+                switchFrag(0, true);
+            else if (id == R.id.action_category)
+                switchFrag(1, true);
+            else if (id == R.id.action_favorite)
+                switchFrag(2, true);
+            return true;
         });
     }
 
@@ -216,17 +205,5 @@ public class MainActivity extends AppCompatActivity {
         if (animate)
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
-    }
-
-    private void handleAd(){
-        /*MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);*/
     }
 }

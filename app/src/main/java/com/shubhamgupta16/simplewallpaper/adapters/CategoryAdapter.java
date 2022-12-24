@@ -20,8 +20,8 @@ import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
-    private Context context;
-    private List<CategoryPOJO> list;
+    private final Context context;
+    private final List<CategoryPOJO> list;
 
     public CategoryAdapter(Context context, List<CategoryPOJO> list) {
         this.context = context;
@@ -44,25 +44,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             holder.itemView.setPadding(extraPadding, 0, 0, 0);
         } else {
             holder.itemView.setPadding(0, 0, extraPadding, 0);
-
         }
 
         CategoryPOJO pojo = list.get(position);
         Glide.with(context).load(pojo.getPreview1()).into(holder.image1);
-        Glide.with(context).load(pojo.getPreview2()).into(holder.image2);
+                Glide.with(context).load(pojo.getPreview2()).into(holder.image2);
         Glide.with(context).load(pojo.getPreview3()).into(holder.image3);
         holder.title.setText(pojo.getName());
-        if (pojo.getWallsCount() <= 1)
-            holder.subtitle.setText(pojo.getWallsCount() + " Wallpaper");
-        else
-            holder.subtitle.setText(pojo.getWallsCount() + " Wallpapers");
-        holder.card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, MoreWallsActivity.class);
-                i.putExtra("category", list.get(position).getName());
-                context.startActivity(i);
-            }
+        holder.subtitle.setText(context.getResources().getQuantityString(R.plurals.wallpaper_s,
+                pojo.getWallsCount(), pojo.getWallsCount()));
+        holder.card.setOnClickListener(view -> {
+            Intent i = new Intent(context, MoreWallsActivity.class);
+            i.putExtra("category", pojo.getName());
+            context.startActivity(i);
         });
 
     }
@@ -73,9 +67,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView image1, image2, image3;
-        private TextView title, subtitle;
-        private View card;
+        private final ImageView image1, image2, image3;
+        private final TextView title, subtitle;
+        private final View card;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
