@@ -110,18 +110,18 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             context.startActivity(i);
         });
 
-        handleHeart(position, pojo.getUrl(), holder.heartImage);
+        handleHeart(position, pojo.getId(), holder.heartImage);
     }
 
-    private void handleHeart(final int position, final String url, final ImageView heartImage) {
-        if (sqlHelper.isFavorite(url)) {
+    private void handleHeart(final int position, final int id, final ImageView heartImage) {
+        if (sqlHelper.isFavorite(id)) {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         } else {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
         heartImage.setOnClickListener(view -> {
-            if (sqlHelper.isFavorite(url)) {
-                sqlHelper.toggleFavorite(url, false);
+            if (sqlHelper.isFavorite(id)) {
+                sqlHelper.toggleFavorite(id, false);
                 if (type == SQLHelper.TYPE_FAVORITE) {
                     list.remove(position);
                     notifyItemRemoved(position);
@@ -132,7 +132,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
                     heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                 }
             } else {
-                sqlHelper.toggleFavorite(url, true);
+                sqlHelper.toggleFavorite(id, true);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });

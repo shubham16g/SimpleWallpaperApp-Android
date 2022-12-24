@@ -93,6 +93,7 @@ public class SplashActivity extends AppCompatActivity {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 WallsPOJO pojo = new WallsPOJO(
+                        0,
                         object.getString("name"),
                         object.getString("previewUrl"),
                         object.getString("url"),

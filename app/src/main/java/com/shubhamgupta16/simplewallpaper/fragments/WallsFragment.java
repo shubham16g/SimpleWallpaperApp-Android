@@ -145,22 +145,29 @@ public class WallsFragment extends Fragment {
 
     private void handleRes(int page, ArrayList<WallsPOJO> walls) {
         if (page != 1) {
-            if (list.size() >= 1)
+            if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-            if (list.size() >= 1)
+                adapter.notifyItemRemoved(list.size());
+            }
+
+            if (list.size() >= 1) {
                 list.remove(list.size() - 1);
+                adapter.notifyItemRemoved(list.size());
+            }
         }
+        int from = list.size();
         list.addAll(walls);
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
 //            Toast.makeText(getContext(), maxPage + "", Toast.LENGTH_SHORT).show();
-            list.add(new WallsPOJO(null, null, "ad", null, false, false));
-            list.add(new WallsPOJO(null, null, null, null, false, false));
-            list.add(new WallsPOJO(null, null, null, null, false, false));
+            list.add(new WallsPOJO(0, null, null, "ad", null, false, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false, false));
         }
+
+        adapter.notifyItemRangeInserted(from, list.size());
 
         lastFetch = page;
         isScrollLoad = true;
-        adapter.notifyDataSetChanged();
 
         handleErrorLayout();
     }

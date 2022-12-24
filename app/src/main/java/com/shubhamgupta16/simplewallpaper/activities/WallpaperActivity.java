@@ -175,7 +175,7 @@ public class WallpaperActivity extends AppCompatActivity {
         View favoriteButton = bottomNavLayout.getChildAt(2);
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
-        if (sqlHelper.isFavorite(pojo.getUrl()))
+        if (sqlHelper.isFavorite(pojo.getId()))
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
@@ -202,11 +202,11 @@ public class WallpaperActivity extends AppCompatActivity {
             askOrApplyWallpaper();
         });
         favoriteButton.setOnClickListener(view -> {
-            if (sqlHelper.isFavorite(pojo.getUrl())) {
-                sqlHelper.toggleFavorite(pojo.getUrl(), false);
+            if (sqlHelper.isFavorite(pojo.getId())) {
+                sqlHelper.toggleFavorite(pojo.getId(), false);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
             } else {
-                sqlHelper.toggleFavorite(pojo.getUrl(), true);
+                sqlHelper.toggleFavorite(pojo.getId(), true);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
@@ -390,5 +390,14 @@ public class WallpaperActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent i = new Intent();
+        i.putExtra("id", pojo.getId());
+        i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));
+        setResult(RESULT_OK, i);
+        super.onDestroy();
     }
 }
