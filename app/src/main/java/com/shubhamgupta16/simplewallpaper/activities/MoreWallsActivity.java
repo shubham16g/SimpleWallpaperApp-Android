@@ -16,6 +16,8 @@ import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
 
 public class MoreWallsActivity extends AppCompatActivity {
 
+    private WallsFragment wallsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +30,7 @@ public class MoreWallsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         FragmentManager manager = getSupportFragmentManager();
-        WallsFragment wallsFragment = (WallsFragment) manager.findFragmentById(R.id.moreFragment);
+        wallsFragment = (WallsFragment) manager.findFragmentById(R.id.moreFragment);
         if (intent.hasExtra("category")) {
             String category = intent.getStringExtra("category");
             toolbar.setTitle(category);
@@ -47,5 +49,11 @@ public class MoreWallsActivity extends AppCompatActivity {
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    @Override
+    protected void onStart() {
+        wallsFragment.focus();
+        super.onStart();
     }
 }

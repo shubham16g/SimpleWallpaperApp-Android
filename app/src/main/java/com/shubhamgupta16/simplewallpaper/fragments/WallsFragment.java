@@ -159,9 +159,9 @@ public class WallsFragment extends Fragment {
         list.addAll(walls);
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
 //            Toast.makeText(getContext(), maxPage + "", Toast.LENGTH_SHORT).show();
-            list.add(new WallsPOJO(0, null, null, "ad", null, false, false));
-            list.add(new WallsPOJO(0, null, null, null, null, false, false));
-            list.add(new WallsPOJO(0, null, null, null, null, false, false));
+            list.add(new WallsPOJO(0, null, null, "ad", null, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false));
         }
 
         adapter.notifyItemRangeInserted(from, list.size());
@@ -172,6 +172,7 @@ public class WallsFragment extends Fragment {
         handleErrorLayout();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
         maxPage = sqlHelper.getPagesCount(type, extras);

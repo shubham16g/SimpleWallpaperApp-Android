@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
@@ -59,11 +62,23 @@ public class SplashActivity extends AppCompatActivity {
         MobileAds.initialize(this, initializationStatus -> {
         });
 
+        AtomicBoolean isRedirected = new AtomicBoolean(false);
+        Handler handler = new Handler(Looper.getMainLooper());
+        Runnable runnable = () -> {
+            isRedirected.set(true);
+            startApp();
+        };
+
+//        wait for ad to load within 8 seconds, else open main activity
+        handler.postDelayed(runnable, 8000);
+
         InterstitialAd.load(this, getString(R.string.splash_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
+                if (isRedirected.get()) return;
                 mInterstitialAd = interstitialAd;
+                handler.removeCallbacks(runnable);
                 showInterstitial();
             }
         });
@@ -98,8 +113,7 @@ public class SplashActivity extends AppCompatActivity {
                         object.getString("previewUrl"),
                         object.getString("url"),
                         object.getString("categories"),
-                        object.optBoolean("premium", false),
-                        false
+                        object.optBoolean("premium", false)
                 );
                 sqlHelper.insertWallpaper(pojo);
             }
