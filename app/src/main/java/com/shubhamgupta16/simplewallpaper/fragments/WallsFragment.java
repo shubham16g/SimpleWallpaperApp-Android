@@ -180,8 +180,9 @@ public class WallsFragment extends Fragment {
         if (type == SQLHelper.TYPE_FAVORITE) {
             int size = list.size();
             list.clear();
-            if (size > 0)
-            adapter.notifyItemRangeRemoved(0, size);
+            if (size > 0) {
+                adapter.notifyDataSetChanged();
+            }
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();
