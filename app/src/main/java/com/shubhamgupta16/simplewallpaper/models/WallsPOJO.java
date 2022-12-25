@@ -3,17 +3,21 @@ package com.shubhamgupta16.simplewallpaper.models;
 import java.io.Serializable;
 
 public class WallsPOJO implements Serializable {
-    private String name, previewUrl, url, categories;
-    boolean premium;
-    boolean favorite;
+    private final int id;
+    private final String name, previewUrl, url, categories;
+    private final boolean premium;
 
-    public WallsPOJO(String name, String previewUrl, String url, String categories, boolean premium, boolean favorite) {
+    public WallsPOJO(int id, String name, String previewUrl, String url, String categories, boolean premium) {
+        this.id = id;
         this.name = name;
         this.previewUrl = previewUrl;
         this.url = url;
         this.categories = categories;
         this.premium = premium;
-        this.favorite = favorite;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getPreviewUrl() {

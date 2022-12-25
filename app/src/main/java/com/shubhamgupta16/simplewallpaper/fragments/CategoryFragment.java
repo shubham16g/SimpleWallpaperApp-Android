@@ -1,5 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,12 +46,14 @@ public class CategoryFragment extends Fragment {
         wallsRecycler.setAdapter(adapter);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFragment(String query){
         list.clear();
         list.addAll(sqlHelper.getCategories(query));
         adapter.notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void focus(){
         adapter.notifyDataSetChanged();
     }

@@ -1,5 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,12 +61,7 @@ public class WallsFragment extends Fragment {
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
         adapter = new WallsAdapter(getContext(), list, SQLHelper.TYPE_NONE);
-        adapter.setOnRemoveFromFavSecotion(new WallsAdapter.OnRemoveFromFavSecotion() {
-            @Override
-            public void onRemove() {
-                handleErrorLayout();
-            }
-        });
+        adapter.setOnRemoveFromFavSecotion(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -100,6 +97,7 @@ public class WallsFragment extends Fragment {
     private int type = SQLHelper.TYPE_NONE;
     private String extras;
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setFragment(int type, String extras) {
         Log.d("tagtag", "set" + type);
         this.type = type;
@@ -141,47 +139,53 @@ public class WallsFragment extends Fragment {
         if (page == 1) {
             handleRes(page, sqlHelper.getWallpapers(page, type, extras));
         } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    handleRes(page, sqlHelper.getWallpapers(page, type, extras));
-                }
-            }, 1000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
         }
 
     }
 
     private void handleRes(int page, ArrayList<WallsPOJO> walls) {
         if (page != 1) {
-            if (list.size() >= 1)
+            if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-            if (list.size() >= 1)
+                adapter.notifyItemRemoved(list.size());
+            }
+
+            if (list.size() >= 1) {
                 list.remove(list.size() - 1);
+                adapter.notifyItemRemoved(list.size());
+            }
         }
+        int from = list.size();
         list.addAll(walls);
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
 //            Toast.makeText(getContext(), maxPage + "", Toast.LENGTH_SHORT).show();
-            list.add(new WallsPOJO(null, null, "ad", null, false, false));
-            list.add(new WallsPOJO(null, null, null, null, false, false));
-            list.add(new WallsPOJO(null, null, null, null, false, false));
+            list.add(new WallsPOJO(0, null, null, "ad", null, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false));
+            list.add(new WallsPOJO(0, null, null, null, null, false));
         }
+
+        adapter.notifyItemRangeInserted(from, list.size());
 
         lastFetch = page;
         isScrollLoad = true;
-        adapter.notifyDataSetChanged();
 
         handleErrorLayout();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
         maxPage = sqlHelper.getPagesCount(type, extras);
         if (type == SQLHelper.TYPE_FAVORITE) {
+            int size = list.size();
             list.clear();
+            if (size > 0) {
+                adapter.notifyDataSetChanged();
+            }
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();
-
     }
 
 }

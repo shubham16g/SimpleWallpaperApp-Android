@@ -41,16 +41,6 @@ public class WallpaperSetter extends AsyncTask<Integer, Integer, Boolean> {
             }
         }.execute(where);
     }
-    public static void apply(Context context, Drawable drawable, int where, OnWallpaperApplied onWallpaperApplied){
-        new WallpaperSetter(context, getBitmap(drawable)){
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                super.onPostExecute(aBoolean);
-                if (onWallpaperApplied != null)
-                    onWallpaperApplied.onTaskCompleted(aBoolean);
-            }
-        }.execute(where);
-    }
 
     private static Bitmap getBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {

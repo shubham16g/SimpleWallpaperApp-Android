@@ -15,7 +15,7 @@ import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import java.util.ArrayList;
 
 public class SQLHelper extends SQLiteOpenHelper {
-    public static final String DB_NAME = "myWalls1";
+    public static final String DB_NAME = "myWalls2";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
     private static final int PER_PAGE_ITEM = 16;
@@ -33,7 +33,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(url VARCHAR PRIMARY KEY, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, favorite INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, favorite INTEGER);");
         db.execSQL("CREATE TABLE IF NOT EXISTS " + CATEGORIES + "(name VARCHAR PRIMARY KEY, preview1 VARCHAR, preview2 VARCHAR, preview3 VARCHAR);");
     }
 
@@ -71,20 +71,20 @@ public class SQLHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void toggleFavorite(String url, boolean favorite) {
+    public void toggleFavorite(int id, boolean favorite) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("favorite", favorite ? 1 : 0);
-        db.update(WALLPAPERS, contentValues, "url='" + url + "'", null);
+        db.update(WALLPAPERS, contentValues, "id=" + id, null);
     }
 
-    public boolean checkAvailableWallpaper(String url) {
+    private boolean checkAvailableWallpaper(String url) {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT url FROM " + WALLPAPERS + " WHERE url='" + url + "'", null);
         return c.moveToFirst();
     }
 
-    public boolean checkAvailableCategory(String name) {
+    private boolean checkAvailableCategory(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT name FROM " + CATEGORIES + " WHERE name='" + name + "'", null);
         return c.moveToFirst();
@@ -161,7 +161,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT * FROM " + WALLPAPERS + extras + " LIMIT " + offset + ", " + PER_PAGE_ITEM, null);
         while (cursor.moveToNext()) {
-            list.add(new WallsPOJO(cursor.getString(2), cursor.getString(1), cursor.getString(0), cursor.getString(3), cursor.getInt(4) != 0, cursor.getInt(5) != 0));
+            list.add(new WallsPOJO(cursor.getInt(0), cursor.getString(3), cursor.getString(2), cursor.getString(1), cursor.getString(4), cursor.getInt(5) != 0));
         }
         return list;
     }
@@ -174,9 +174,9 @@ public class SQLHelper extends SQLiteOpenHelper {
         } else return 0;
     }
 
-    public boolean isFavorite(String url) {
+    public boolean isFavorite(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT favorite FROM " + WALLPAPERS + " WHERE url='" + url + "'", null);
+        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT favorite FROM " + WALLPAPERS + " WHERE id=" + id, null);
         if (c.moveToFirst()) {
             return c.getInt(0) != 0;
         }

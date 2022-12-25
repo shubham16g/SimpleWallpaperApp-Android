@@ -29,12 +29,13 @@ import com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.List;
+import java.util.Objects;
 
 public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> {
 
-    private Context context;
-    private List<WallsPOJO> list;
-    private SQLHelper sqlHelper;
+    private final Context context;
+    private final List<WallsPOJO> list;
+    private final SQLHelper sqlHelper;
     private int type;
 
     public WallsAdapter(Context context, List<WallsPOJO> list, int type) {
@@ -71,25 +72,20 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int extraPadding = context.getResources().getDimensionPixelOffset(R.dimen.wall_card_space);
-
         if (getItemViewType(position) == 0)
             return;
         if (getItemViewType(position) == 2) {
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
             layoutParams.setFullSpan(true);
             AdLoader adLoader = new AdLoader.Builder(context, context.getString(R.string.native_ad_id))
-                    .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
-                        @Override
-                        public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
-                            NativeAdView unifiedNativeAdView = holder.adView;
-                            unifiedNativeAdView.setVisibility(View.VISIBLE);
-                            mapUnifiedNativeAdToLayout(nativeAd, unifiedNativeAdView);
-                        }
+                    .forNativeAd(nativeAd -> {
+                        NativeAdView unifiedNativeAdView = holder.adView;
+                        unifiedNativeAdView.setVisibility(View.VISIBLE);
+                        mapUnifiedNativeAdToLayout(nativeAd, unifiedNativeAdView);
                     })
                     .withAdListener(new AdListener() {
                         @Override
-                        public void onAdFailedToLoad(LoadAdError adError) {
+                        public void onAdFailedToLoad(@NonNull LoadAdError adError) {
 //                            holder.adView.setVisibility(View.GONE);
                             // Handle the failure by logging, altering the UI, and so on.
                         }
@@ -106,7 +102,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         WallsPOJO pojo = list.get(position);
         holder.premiumImage.setVisibility(pojo.isPremium() ? View.VISIBLE : View.GONE);
         holder.heartImage.setVisibility(pojo.isPremium() ? View.GONE : View.VISIBLE);
-        Glide.with(context).load(pojo.getPreviewUrl()).thumbnail(0.3f).into(holder.imageView);
+        Glide.with(context).load(pojo.getPreviewUrl()).sizeMultiplier(0.3f).into(holder.imageView);
         holder.title.setText(pojo.getName());
         holder.card.setOnClickListener(view -> {
             Intent i = new Intent(context, WallpaperActivity.class);
@@ -114,33 +110,30 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             context.startActivity(i);
         });
 
-        handleHeart(position, pojo.getUrl(), holder.heartImage);
+        handleHeart(position, pojo.getId(), holder.heartImage);
     }
 
-    private void handleHeart(final int position, final String url, final ImageView heartImage) {
-        if (sqlHelper.isFavorite(url)) {
+    private void handleHeart(final int position, final int id, final ImageView heartImage) {
+        if (sqlHelper.isFavorite(id)) {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         } else {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
-        heartImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sqlHelper.isFavorite(url)) {
-                    sqlHelper.toggleFavorite(url, false);
-                    if (type == SQLHelper.TYPE_FAVORITE) {
-                        list.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, list.size());
-                        if (onRemoveFromFavSecotion != null)
-                            onRemoveFromFavSecotion.onRemove();
-                    } else {
-                        heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-                    }
+        heartImage.setOnClickListener(view -> {
+            if (sqlHelper.isFavorite(id)) {
+                sqlHelper.toggleFavorite(id, false);
+                if (type == SQLHelper.TYPE_FAVORITE) {
+                    list.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, list.size());
+                    if (onRemoveFromFavSecotion != null)
+                        onRemoveFromFavSecotion.onRemove();
                 } else {
-                    sqlHelper.toggleFavorite(url, true);
-                    heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
+                    heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                 }
+            } else {
+                sqlHelper.toggleFavorite(id, true);
+                heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
     }
@@ -196,48 +189,62 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         myAdView.setStoreView(myAdView.findViewById(R.id.ad_store));
         myAdView.setAdvertiserView(myAdView.findViewById(R.id.ad_advertiser));
 
-        ((TextView) myAdView.getHeadlineView()).setText(adFromGoogle.getHeadline());
+        ((TextView) Objects.requireNonNull(myAdView.getHeadlineView())).setText(adFromGoogle.getHeadline());
 
-        if (adFromGoogle.getBody() == null) {
-            myAdView.getBodyView().setVisibility(View.GONE);
-        } else {
-            ((TextView) myAdView.getBodyView()).setText(adFromGoogle.getBody());
+        if (myAdView.getBodyView() != null){
+            if (adFromGoogle.getBody() == null) {
+                myAdView.getBodyView().setVisibility(View.GONE);
+            } else {
+                ((TextView) myAdView.getBodyView()).setText(adFromGoogle.getBody());
+            }
         }
 
-        if (adFromGoogle.getCallToAction() == null) {
-            myAdView.getCallToActionView().setVisibility(View.GONE);
-        } else {
-            ((Button) myAdView.getCallToActionView()).setText(adFromGoogle.getCallToAction());
+        if (myAdView.getCallToActionView() != null) {
+            if (adFromGoogle.getCallToAction() == null) {
+                myAdView.getCallToActionView().setVisibility(View.GONE);
+            } else {
+                ((Button) myAdView.getCallToActionView()).setText(adFromGoogle.getCallToAction());
+            }
         }
 
-        if (adFromGoogle.getIcon() == null) {
-            myAdView.getIconView().setVisibility(View.GONE);
-        } else {
-            ((ImageView) myAdView.getIconView()).setImageDrawable(adFromGoogle.getIcon().getDrawable());
+        if (myAdView.getIconView() != null) {
+            if (adFromGoogle.getIcon() == null) {
+                myAdView.getIconView().setVisibility(View.GONE);
+            } else {
+                ((ImageView) myAdView.getIconView()).setImageDrawable(adFromGoogle.getIcon().getDrawable());
+            }
         }
 
-        if (adFromGoogle.getPrice() == null) {
-            myAdView.getPriceView().setVisibility(View.GONE);
-        } else {
-            ((TextView) myAdView.getPriceView()).setText(adFromGoogle.getPrice());
+        if (myAdView.getPriceView() != null) {
+            if (adFromGoogle.getPrice() == null) {
+                myAdView.getPriceView().setVisibility(View.GONE);
+            } else {
+                ((TextView) myAdView.getPriceView()).setText(adFromGoogle.getPrice());
+            }
         }
 
-        if (adFromGoogle.getStarRating() == null) {
-            myAdView.getStarRatingView().setVisibility(View.GONE);
-        } else {
-            ((RatingBar) myAdView.getStarRatingView()).setRating(adFromGoogle.getStarRating().floatValue());
+        if (myAdView.getStarRatingView() != null) {
+            if (adFromGoogle.getStarRating() == null) {
+                myAdView.getStarRatingView().setVisibility(View.GONE);
+            } else {
+                ((RatingBar) myAdView.getStarRatingView()).setRating(adFromGoogle.getStarRating().floatValue());
+            }
         }
 
-        if (adFromGoogle.getStore() == null) {
-            myAdView.getStoreView().setVisibility(View.GONE);
-        } else {
-            ((TextView) myAdView.getStoreView()).setText(adFromGoogle.getStore());
+        if (myAdView.getStoreView() != null) {
+            if (adFromGoogle.getStore() == null) {
+                myAdView.getStoreView().setVisibility(View.GONE);
+            } else {
+                ((TextView) myAdView.getStoreView()).setText(adFromGoogle.getStore());
+            }
         }
 
-        if (adFromGoogle.getAdvertiser() == null) {
-            myAdView.getAdvertiserView().setVisibility(View.GONE);
-        } else {
-            ((TextView) myAdView.getAdvertiserView()).setText(adFromGoogle.getAdvertiser());
+        if (myAdView.getAdvertiserView() != null) {
+            if (adFromGoogle.getAdvertiser() == null) {
+                myAdView.getAdvertiserView().setVisibility(View.GONE);
+            } else {
+                ((TextView) myAdView.getAdvertiserView()).setText(adFromGoogle.getAdvertiser());
+            }
         }
 
         myAdView.setNativeAd(adFromGoogle);

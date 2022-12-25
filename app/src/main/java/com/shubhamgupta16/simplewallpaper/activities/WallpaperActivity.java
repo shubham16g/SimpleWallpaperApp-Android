@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -39,13 +38,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -103,26 +99,14 @@ public class WallpaperActivity extends AppCompatActivity {
         pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
         setupBottomNav();
 
-//        toolbar.setTitle(pojo.getName());
-//        toolbar.setSubtitle(pojo.getCategories());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         initInterstitial();
 
         if (pojo.isPremium()) {
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
         }
 
-        photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
-            @Override
-            public void onPhotoTap(ImageView view, float x, float y) {
-                toggleTouch();
-            }
-        });
+        photoView.setOnPhotoTapListener((view, x, y) -> toggleTouch());
 
         photoView.setTag(false);
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
@@ -173,10 +157,7 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     private void initInterstitial() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         InterstitialAd.load(this, getString(R.string.set_wallpaper_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
@@ -194,48 +175,39 @@ public class WallpaperActivity extends AppCompatActivity {
         View favoriteButton = bottomNavLayout.getChildAt(2);
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
-        if (sqlHelper.isFavorite(pojo.getUrl()))
+        if (sqlHelper.isFavorite(pojo.getId()))
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
 //        save button click
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isStoragePermissionNotGranted()){
-                    ActivityCompat.requestPermissions(WallpaperActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                    return;
-                }
-                if (pojo.isPremium()) {
-                    showWatchAdDialog(true);
-                    return;
-                }
-                saveImage();
+        saveButton.setOnClickListener(view -> {
+            if (isStoragePermissionNotGranted()){
+                ActivityCompat.requestPermissions(WallpaperActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return;
             }
+            if (pojo.isPremium()) {
+                showWatchAdDialog(true);
+                return;
+            }
+            saveImage();
         });
 
 //        apply button click
-        applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (pojo.isPremium()) {
-                    showWatchAdDialog(false);
-                    return;
-                }
-                askOrApplyWallpaper();
+        applyButton.setOnClickListener(view -> {
+            if (pojo.isPremium()) {
+                showWatchAdDialog(false);
+                return;
             }
+            askOrApplyWallpaper();
         });
-        favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sqlHelper.isFavorite(pojo.getUrl())) {
-                    sqlHelper.toggleFavorite(pojo.getUrl(), false);
-                    heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-                } else {
-                    sqlHelper.toggleFavorite(pojo.getUrl(), true);
-                    heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
-                }
+        favoriteButton.setOnClickListener(view -> {
+            if (sqlHelper.isFavorite(pojo.getId())) {
+                sqlHelper.toggleFavorite(pojo.getId(), false);
+                heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+            } else {
+                sqlHelper.toggleFavorite(pojo.getId(), true);
+                heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
     }
@@ -288,15 +260,9 @@ public class WallpaperActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AlertDialog dialog = new AlertDialog.Builder(WallpaperActivity.this)
                     .setView(v).create();
-            v.findViewById(R.id.on_home_screen_btn).setOnClickListener(view -> {
-               applyWallpaper(1);
-            });
-            v.findViewById(R.id.on_lock_screen_btn).setOnClickListener(view -> {
-                applyWallpaper(2);
-            });
-            v.findViewById(R.id.on_both_screen_btn).setOnClickListener(view -> {
-                applyWallpaper(3);
-            });
+            v.findViewById(R.id.on_home_screen_btn).setOnClickListener(view -> applyWallpaper(1));
+            v.findViewById(R.id.on_lock_screen_btn).setOnClickListener(view -> applyWallpaper(2));
+            v.findViewById(R.id.on_both_screen_btn).setOnClickListener(view -> applyWallpaper(3));
             dialog.show();
         } else {
             applyWallpaper(0);
@@ -332,26 +298,26 @@ public class WallpaperActivity extends AppCompatActivity {
             bottomShadow.animate().alpha(0).setDuration(200);
             bottomNavLayout.animate().alpha(0).setDuration(200).setListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationStart(Animator animator) {
+                public void onAnimationStart(@NonNull Animator animator) {
                     if (bottomNavLayout.getVisibility() == View.VISIBLE) {
                         bottomNavLayout.setVisibility(View.VISIBLE);
                     }
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animator) {
+                public void onAnimationEnd(@NonNull Animator animator) {
                     if (bottomNavLayout.getVisibility() == View.GONE) {
                         bottomNavLayout.setVisibility(View.GONE);
                     }
                 }
 
                 @Override
-                public void onAnimationCancel(Animator animator) {
+                public void onAnimationCancel(@NonNull Animator animator) {
 
                 }
 
                 @Override
-                public void onAnimationRepeat(Animator animator) {
+                public void onAnimationRepeat(@NonNull Animator animator) {
 
                 }
             });
@@ -371,7 +337,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
     private void applyWallpaper(int where) {
         progressBar.setVisibility(View.VISIBLE);
-        WallpaperSetter.apply(this, photoView.getDrawable(), where, b -> {
+        WallpaperSetter.apply(this, imageBitmap, where, b -> {
             progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(WallpaperActivity.this, WallpaperActivity.class);
             intent.putExtra("pojo", pojo);
@@ -386,9 +352,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private void showWatchAdDialog(boolean isForSaveImage) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.download_premium_title)
-                .setPositiveButton(R.string.yes_watch, (dialog1, which) -> {
-                    loadRewardedAd(isForSaveImage);
-                })
+                .setPositiveButton(R.string.yes_watch, (dialog1, which) -> loadRewardedAd(isForSaveImage))
                 .setNegativeButton(R.string.no_thanks, null)
                 .create().show();
     }
@@ -426,5 +390,14 @@ public class WallpaperActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent i = new Intent();
+        i.putExtra("id", pojo.getId());
+        i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));
+        setResult(RESULT_OK, i);
+        super.onDestroy();
     }
 }
