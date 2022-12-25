@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -138,7 +139,7 @@ public class WallsFragment extends Fragment {
         if (page == 1) {
             handleRes(page, sqlHelper.getWallpapers(page, type, extras));
         } else {
-            new Handler().postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
         }
 
     }
@@ -177,7 +178,10 @@ public class WallsFragment extends Fragment {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
         maxPage = sqlHelper.getPagesCount(type, extras);
         if (type == SQLHelper.TYPE_FAVORITE) {
+            int size = list.size();
             list.clear();
+            if (size > 0)
+            adapter.notifyItemRangeRemoved(0, size);
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();
