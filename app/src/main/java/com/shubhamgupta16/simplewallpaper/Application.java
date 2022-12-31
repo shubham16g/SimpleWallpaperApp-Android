@@ -1,14 +1,27 @@
 package com.shubhamgupta16.simplewallpaper;
 
 import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
+import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+
 public class Application extends android.app.Application {
+
+    private InitSQL initSQL;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        initSQL = new InitSQL(this, new SQLHelper(this));
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
         final String[] themesLatest = getResources().getStringArray(R.array.theme_values_latest);
 
@@ -25,6 +38,12 @@ public class Application extends android.app.Application {
         } else if (newVal.equals(themesLatest[3])) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
         }
+
+        initSQL.setupCategories();
+        initSQL.setupWallpapers();
+
+        MobileAds.initialize(this, initializationStatus -> {
+        });
     }
 
 }
