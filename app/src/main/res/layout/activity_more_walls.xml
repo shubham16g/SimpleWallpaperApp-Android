@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_reycler" />
+
     <com.google.android.gms.ads.AdView
         android:layout_alignParentBottom="true"
         xmlns:ads="http://schemas.android.com/apk/res-auto"

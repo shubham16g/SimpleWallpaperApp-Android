@@ -61,7 +61,7 @@ public class WallsFragment extends Fragment {
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
         adapter = new WallsAdapter(getContext(), list, SQLHelper.TYPE_NONE);
-        adapter.setOnRemoveFromFavSecotion(this::handleErrorLayout);
+        adapter.setOnRemoveFromFavSection(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
