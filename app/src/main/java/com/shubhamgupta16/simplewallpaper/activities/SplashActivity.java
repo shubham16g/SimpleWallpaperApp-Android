@@ -8,17 +8,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shubhamgupta16.simplewallpaper.MyApplication;
+import com.shubhamgupta16.simplewallpaper.Application;
 import com.shubhamgupta16.simplewallpaper.R;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static final long SPLASH_DURATION_SECONDS = 3;
+    private static final long SPLASH_DURATION_SECONDS = 1;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public void showAppOpenAd(MyApplication application) {
+    public void showAppOpenAd(Application application) {
         // don't redirect automatically
         handler.removeCallbacks(runnable);
         // show ad. onComplete, redirect to MainActivity

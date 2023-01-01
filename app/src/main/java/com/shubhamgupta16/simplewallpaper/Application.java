@@ -1,7 +1,6 @@
 package com.shubhamgupta16.simplewallpaper;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
@@ -19,7 +18,7 @@ import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 
-public class MyApplication extends Application
+public class Application extends android.app.Application
         implements ActivityLifecycleCallbacks, DefaultLifecycleObserver {
 
     private AppOpenAdManager appOpenAdManager;
@@ -47,7 +46,7 @@ public class MyApplication extends Application
             @Override
             public void onAdLoaded() {
                 if (currentActivity instanceof SplashActivity) {
-                    ((SplashActivity) currentActivity).showAppOpenAd(MyApplication.this);
+                    ((SplashActivity) currentActivity).showAppOpenAd(Application.this);
                 }
             }
 

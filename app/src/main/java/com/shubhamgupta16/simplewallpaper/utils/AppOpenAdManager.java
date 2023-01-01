@@ -12,7 +12,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
-import com.shubhamgupta16.simplewallpaper.MyApplication;
+import com.shubhamgupta16.simplewallpaper.Application;
 
 import java.util.Date;
 
@@ -128,7 +128,7 @@ public class AppOpenAdManager {
      */
     public void showAdIfAvailable(
             @NonNull final Activity activity,
-            @NonNull MyApplication.OnShowAdCompleteListener onShowAdCompleteListener) {
+            @NonNull Application.OnShowAdCompleteListener onShowAdCompleteListener) {
         // If the app open ad is already showing, do not show the ad again.
         if (isShowingAd) {
             Log.d(LOG_TAG, "The app open ad is already showing.");

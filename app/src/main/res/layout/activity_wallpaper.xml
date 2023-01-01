@@ -57,10 +57,9 @@
 
     <LinearLayout
         android:id="@+id/bottomButtonNav"
-        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/adView"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -137,6 +136,15 @@
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+        android:layout_alignParentBottom="true"
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/main_banner_id"/>
 
     <ProgressBar
         android:id="@+id/full_progressbar"
