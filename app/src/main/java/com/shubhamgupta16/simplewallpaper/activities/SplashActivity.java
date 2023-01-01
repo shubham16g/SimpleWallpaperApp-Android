@@ -4,83 +4,88 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
-import android.view.ViewTreeObserver;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
+import com.shubhamgupta16.simplewallpaper.MyApplication;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
-import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private SQLHelper sqlHelper;
-    private InterstitialAd mInterstitialAd;
+    private static final String LOG_TAG = "SplashActivity";
+
+    /**
+     * Number of seconds to count down before showing the app open ad. This simulates the time needed
+     * to load the app.
+     */
+    private static final long COUNTER_TIME = 5;
+
+    private long secondsRemaining;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        initInterstitial();
 
-        sqlHelper = new SQLHelper(this);
-
-
+        // Create a timer so the SplashActivity will be displayed for a fixed amount of time.
+        createTimer(COUNTER_TIME);
     }
 
-    private void startApp() {
-        startActivity(new Intent(SplashActivity.this, MainActivity.class));
-        finish();
+    /**
+     * Create the countdown timer, which counts down to zero and show the app open ad.
+     *
+     * @param seconds the number of seconds that the timer counts down from
+     */
+    private void createTimer(long seconds) {
 
+        CountDownTimer countDownTimer =
+                new CountDownTimer(seconds * 1000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        secondsRemaining = ((millisUntilFinished / 1000) + 1);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        secondsRemaining = 0;
+
+                        Application application = getApplication();
+
+                        // If the application is not an instance of MyApplication, log an error message and
+                        // start the MainActivity without showing the app open ad.
+                        if (!(application instanceof MyApplication)) {
+                            Log.e(LOG_TAG, "Failed to cast application to MyApplication.");
+                            startMainActivity();
+                            return;
+                        }
+
+                        // Show the app open ad.
+                        ((MyApplication) application).showAdIfAvailable(
+                                SplashActivity.this, () -> startMainActivity());
+                    }
+                };
+        countDownTimer.start();
     }
 
-    private void showInterstitial() {
-        startApp();
-        mInterstitialAd.show(this);
-
-    }
-
-    private void initInterstitial() {
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-
-        AtomicBoolean isRedirected = new AtomicBoolean(false);
-        Handler handler = new Handler(Looper.getMainLooper());
-        Runnable runnable = () -> {
-            isRedirected.set(true);
-            startApp();
-        };
-
-//        wait for ad to load within 8 seconds, else open main activity
-        handler.postDelayed(runnable, 8000);
-
-        InterstitialAd.load(this, getString(R.string.splash_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                if (isRedirected.get()) return;
-                mInterstitialAd = interstitialAd;
-                handler.removeCallbacks(runnable);
-                showInterstitial();
-            }
-        });
+    /**
+     * Start the MainActivity.
+     */
+    public void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.startActivity(intent);
     }
 }

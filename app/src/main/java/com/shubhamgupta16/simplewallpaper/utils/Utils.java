@@ -3,6 +3,7 @@ package com.shubhamgupta16.simplewallpaper.utils;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -13,12 +14,36 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
+
+import com.shubhamgupta16.simplewallpaper.R;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 public class Utils {
+
+    public static void initTheme(Context context){
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
+        final String[] themesLatest = context.getResources().getStringArray(R.array.theme_values_latest);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String newVal = prefs.getString("theme", null);
+        if (newVal == null) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
+        } else if (newVal.equals(themesLatest[0])) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else if (newVal.equals(themesLatest[1])) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else if (newVal.equals(themesLatest[2])) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if (newVal.equals(themesLatest[3])) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+        }
+    }
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
