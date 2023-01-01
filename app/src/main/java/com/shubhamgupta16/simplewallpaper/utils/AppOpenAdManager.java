@@ -3,7 +3,6 @@ package com.shubhamgupta16.simplewallpaper.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -72,7 +71,6 @@ public class AppOpenAdManager {
                         onAddLoadCallback.onAdLoaded();
 
                         Log.d(LOG_TAG, "onAdLoaded.");
-                        Toast.makeText(context, "onAdLoaded", Toast.LENGTH_SHORT).show();
                     }
 
                     /**
@@ -85,7 +83,6 @@ public class AppOpenAdManager {
                         isLoadingAd = false;
                         onAddLoadCallback.onAdLoadFailed();
                         Log.d(LOG_TAG, "onAdFailedToLoad: " + loadAdError.getMessage());
-                        Toast.makeText(context, "onAdFailedToLoad", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -155,7 +152,6 @@ public class AppOpenAdManager {
                         isShowingAd = false;
 
                         Log.d(LOG_TAG, "onAdDismissedFullScreenContent.");
-                        Toast.makeText(activity, "onAdDismissedFullScreenContent", Toast.LENGTH_SHORT).show();
 
                         onShowAdCompleteListener.onShowAdComplete();
                         loadAd(activity);
@@ -168,8 +164,6 @@ public class AppOpenAdManager {
                         isShowingAd = false;
 
                         Log.d(LOG_TAG, "onAdFailedToShowFullScreenContent: " + adError.getMessage());
-                        Toast.makeText(activity, "onAdFailedToShowFullScreenContent", Toast.LENGTH_SHORT)
-                                .show();
 
                         onShowAdCompleteListener.onShowAdComplete();
                         loadAd(activity);
@@ -179,7 +173,6 @@ public class AppOpenAdManager {
                     @Override
                     public void onAdShowedFullScreenContent() {
                         Log.d(LOG_TAG, "onAdShowedFullScreenContent.");
-                        Toast.makeText(activity, "onAdShowedFullScreenContent", Toast.LENGTH_SHORT).show();
                     }
                 });
 
