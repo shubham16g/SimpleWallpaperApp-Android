@@ -25,6 +25,8 @@ public class AppOpenAdManager {
     private boolean isLoadingAd = false;
     public boolean isShowingAd = false;
 
+    private final OnAddLoadCallback onAddLoadCallback;
+
     /**
      * Keep track of the time an app open ad is loaded to ensure you don't show an expired ad.
      */
@@ -33,7 +35,8 @@ public class AppOpenAdManager {
     /**
      * Constructor.
      */
-    public AppOpenAdManager() {
+    public AppOpenAdManager(@NonNull OnAddLoadCallback onAddLoadCallback) {
+        this.onAddLoadCallback = onAddLoadCallback;
     }
 
     /**
@@ -66,6 +69,8 @@ public class AppOpenAdManager {
                         isLoadingAd = false;
                         loadTime = (new Date()).getTime();
 
+                        onAddLoadCallback.onAdLoaded();
+
                         Log.d(LOG_TAG, "onAdLoaded.");
                         Toast.makeText(context, "onAdLoaded", Toast.LENGTH_SHORT).show();
                     }
@@ -78,6 +83,7 @@ public class AppOpenAdManager {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         isLoadingAd = false;
+                        onAddLoadCallback.onAdLoadFailed();
                         Log.d(LOG_TAG, "onAdFailedToLoad: " + loadAdError.getMessage());
                         Toast.makeText(context, "onAdFailedToLoad", Toast.LENGTH_SHORT).show();
                     }
@@ -179,5 +185,10 @@ public class AppOpenAdManager {
 
         isShowingAd = true;
         appOpenAd.show(activity);
+    }
+
+    public interface OnAddLoadCallback {
+        void onAdLoaded();
+        void onAdLoadFailed();
     }
 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.android.gms.ads.MobileAds;
+import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
 import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
@@ -43,7 +43,19 @@ public class MyApplication extends Application
         });
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        appOpenAdManager = new AppOpenAdManager();
+        appOpenAdManager = new AppOpenAdManager(new AppOpenAdManager.OnAddLoadCallback() {
+            @Override
+            public void onAdLoaded() {
+                if (currentActivity instanceof SplashActivity) {
+                    ((SplashActivity) currentActivity).showAppOpenAd(MyApplication.this);
+                }
+            }
+
+            @Override
+            public void onAdLoadFailed() {
+
+            }
+        });
     }
 
     @Override
