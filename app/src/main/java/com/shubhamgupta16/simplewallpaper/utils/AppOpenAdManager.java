@@ -11,7 +11,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
-import com.shubhamgupta16.simplewallpaper.Application;
 
 import java.util.Date;
 
@@ -112,20 +111,6 @@ public class AppOpenAdManager {
      * @param activity the activity that shows the app open ad
      */
     public void showAdIfAvailable(@NonNull final Activity activity) {
-        showAdIfAvailable(
-                activity,
-                () -> {});
-    }
-
-    /**
-     * Show the ad if one isn't already showing.
-     *
-     * @param activity                 the activity that shows the app open ad
-     * @param onShowAdCompleteListener the listener to be notified when an app open ad is complete
-     */
-    public void showAdIfAvailable(
-            @NonNull final Activity activity,
-            @NonNull Application.OnShowAdCompleteListener onShowAdCompleteListener) {
         // If the app open ad is already showing, do not show the ad again.
         if (isShowingAd) {
             Log.d(LOG_TAG, "The app open ad is already showing.");
@@ -135,7 +120,6 @@ public class AppOpenAdManager {
         // If the app open ad is not available yet, invoke the callback then load the ad.
         if (!isAdAvailable()) {
             Log.d(LOG_TAG, "The app open ad is not ready yet.");
-            onShowAdCompleteListener.onShowAdComplete();
             loadAd(activity);
             return;
         }
@@ -151,9 +135,8 @@ public class AppOpenAdManager {
                         appOpenAd = null;
                         isShowingAd = false;
 
-                        onAddLoadCallback.onComplete();
+                        onAddLoadCallback.onAdComplete();
                         Log.d(LOG_TAG, "onAdDismissedFullScreenContent.");
-                        onShowAdCompleteListener.onShowAdComplete();
                         loadAd(activity);
                     }
 
@@ -162,17 +145,17 @@ public class AppOpenAdManager {
                     public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                         appOpenAd = null;
                         isShowingAd = false;
+                        onAddLoadCallback.onAdShowError();
 
                         Log.d(LOG_TAG, "onAdFailedToShowFullScreenContent: " + adError.getMessage());
 
-                        onShowAdCompleteListener.onShowAdComplete();
                         loadAd(activity);
                     }
 
                     /** Called when fullscreen content is shown. */
                     @Override
                     public void onAdShowedFullScreenContent() {
-                        onAddLoadCallback.onShow();
+                        onAddLoadCallback.onAdShown();
                         Log.d(LOG_TAG, "onAdShowedFullScreenContent.");
                     }
                 });
@@ -183,8 +166,9 @@ public class AppOpenAdManager {
 
     public interface OnAddLoadCallback {
         void onAdLoaded();
-        void onShow();
-        void onComplete();
         void onAdLoadFailed();
+        void onAdShown();
+        void onAdShowError();
+        void onAdComplete();
     }
 }

@@ -23,8 +23,6 @@ public class Application extends android.app.Application
 
     private AppOpenAdManager appOpenAdManager;
     private Activity currentActivity;
-    private static final String TAG = "MyApplication";
-    private boolean isAdLoaded;
 
     @Override
     public void onCreate() {
@@ -50,22 +48,27 @@ public class Application extends android.app.Application
             }
 
             @Override
-            public void onShow() {
+            public void onAdLoadFailed() {
+
+            }
+
+            @Override
+            public void onAdShown() {
                 if (currentActivity instanceof SplashActivity){
                     ((SplashActivity) currentActivity).notifyAdShown();
                 }
             }
 
             @Override
-            public void onComplete() {
-                if (currentActivity instanceof SplashActivity){
-                    ((SplashActivity) currentActivity).notifyAdComplete();
-                }
+            public void onAdShowError() {
+
             }
 
             @Override
-            public void onAdLoadFailed() {
-
+            public void onAdComplete() {
+                if (currentActivity instanceof SplashActivity){
+                    ((SplashActivity) currentActivity).notifyAdComplete();
+                }
             }
         });
     }
@@ -87,10 +90,6 @@ public class Application extends android.app.Application
      */
     @Override
     public void onActivityStarted(@NonNull Activity activity) {
-        // An ad activity is started when an ad is showing, which could be AdActivity class from Google
-        // SDK or another activity class implemented by a third party mediation partner. Updating the
-        // currentActivity only when an ad is not showing will ensure it is not an ad activity, but the
-        // one that shows the ad.
         if (!appOpenAdManager.isShowingAd) {
             currentActivity = activity;
         }
@@ -120,25 +119,4 @@ public class Application extends android.app.Application
     public void onActivityDestroyed(@NonNull Activity activity) {
     }
 
-    /**
-     * Shows an app open ad.
-     *
-     * @param activity                 the activity that shows the app open ad
-     * @param onShowAdCompleteListener the listener to be notified when an app open ad is complete
-     */
-    public void showAdIfAvailable(
-            @NonNull Activity activity,
-            @NonNull OnShowAdCompleteListener onShowAdCompleteListener) {
-        // We wrap the showAdIfAvailable to enforce that other classes only interact with MyApplication
-        // class.
-        appOpenAdManager.showAdIfAvailable(activity, onShowAdCompleteListener);
-    }
-
-    /**
-     * Interface definition for a callback to be invoked when an app open ad is complete
-     * (i.e. dismissed or fails to show).
-     */
-    public interface OnShowAdCompleteListener {
-        void onShowAdComplete();
-    }
 }
