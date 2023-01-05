@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private WallsFragment favoriteFragment;
     private int currentFragPos = 0;
     private MenuItem searchItem;
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +41,17 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        handleAd();
+        initAd();
         init();
     }
 
-    private void handleAd() {
+    private void initAd() {
         MobileAds.initialize(this, initializationStatus -> {
         });
 
-        AdView mAdView = findViewById(R.id.adView);
+        adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        adView.loadAd(adRequest);
     }
 
     @Override
@@ -63,7 +64,23 @@ public class MainActivity extends AppCompatActivity {
             favoriteFragment.focus();
     }
 
+    @Override
+    protected void onPause() {
+        adView.pause();
+        super.onPause();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adView.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adView.destroy();
+        super.onDestroy();
+    }
 
     private void searchFilter(String query) {
         Log.d("tagtag", "search");

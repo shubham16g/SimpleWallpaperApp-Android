@@ -111,7 +111,7 @@ public class WallpaperActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        handleAd();
+        initAd();
 
         pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
         setupBottomNav();
@@ -168,7 +168,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
     }
 
-    private void handleAd() {
+    private void initAd() {
         MobileAds.initialize(this, initializationStatus -> {
         });
 
@@ -391,7 +391,20 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        adView.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adView.resume();
+    }
+
+    @Override
     protected void onDestroy() {
+        adView.destroy();
         Intent i = new Intent();
         i.putExtra("id", pojo.getId());
         i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));

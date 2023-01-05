@@ -17,6 +17,7 @@ import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
 public class MoreWallsActivity extends AppCompatActivity {
 
     private WallsFragment wallsFragment;
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,7 @@ public class MoreWallsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(view -> finish());
 
-        handleAd();
+        initAd();
 
         Intent intent = getIntent();
         FragmentManager manager = getSupportFragmentManager();
@@ -42,18 +43,36 @@ public class MoreWallsActivity extends AppCompatActivity {
 
     }
 
-    private void handleAd() {
+    private void initAd() {
         MobileAds.initialize(this, initializationStatus -> {
         });
 
-        AdView mAdView = findViewById(R.id.adView);
+        adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        adView.loadAd(adRequest);
     }
 
     @Override
     protected void onStart() {
         wallsFragment.focus();
         super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        adView.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adView.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adView.destroy();
+        super.onDestroy();
     }
 }
