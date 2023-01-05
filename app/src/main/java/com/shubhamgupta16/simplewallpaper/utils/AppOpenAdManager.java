@@ -21,7 +21,7 @@ public class AppOpenAdManager {
     private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/3419835294";
 
     private AppOpenAd appOpenAd = null;
-    private boolean isLoadingAd = false;
+    public boolean isLoadingAd = false;
     public boolean isShowingAd = false;
 
     private final OnAddLoadCallback onAddLoadCallback;
@@ -151,8 +151,8 @@ public class AppOpenAdManager {
                         appOpenAd = null;
                         isShowingAd = false;
 
+                        onAddLoadCallback.onComplete();
                         Log.d(LOG_TAG, "onAdDismissedFullScreenContent.");
-
                         onShowAdCompleteListener.onShowAdComplete();
                         loadAd(activity);
                     }
@@ -172,6 +172,7 @@ public class AppOpenAdManager {
                     /** Called when fullscreen content is shown. */
                     @Override
                     public void onAdShowedFullScreenContent() {
+                        onAddLoadCallback.onShow();
                         Log.d(LOG_TAG, "onAdShowedFullScreenContent.");
                     }
                 });
@@ -182,6 +183,8 @@ public class AppOpenAdManager {
 
     public interface OnAddLoadCallback {
         void onAdLoaded();
+        void onShow();
+        void onComplete();
         void onAdLoadFailed();
     }
 }

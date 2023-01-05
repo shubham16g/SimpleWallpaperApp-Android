@@ -14,16 +14,14 @@ import com.shubhamgupta16.simplewallpaper.R;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static final long SPLASH_DURATION_SECONDS = 1;
+    private static final long SPLASH_DURATION_SECONDS = 5;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public void showAppOpenAd(Application application) {
-        // don't redirect automatically
-        handler.removeCallbacks(runnable);
-        // show ad. onComplete, redirect to MainActivity
-        application.showAdIfAvailable(this, this::startMainActivity);
-    }
+//    public void showAppOpenAd(Application application) {
+//        // show ad. onComplete, redirect to MainActivity
+//        application.showAdIfAvailable(this, this::startMainActivity);
+//    }
 
 
     @Override
@@ -41,5 +39,14 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
         finish();
+    }
+
+    public void notifyAdShown() {
+        // don't redirect automatically
+        handler.removeCallbacks(runnable);
+    }
+
+    public void notifyAdComplete() {
+        startMainActivity();
     }
 }

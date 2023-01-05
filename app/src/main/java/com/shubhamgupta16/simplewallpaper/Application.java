@@ -24,6 +24,7 @@ public class Application extends android.app.Application
     private AppOpenAdManager appOpenAdManager;
     private Activity currentActivity;
     private static final String TAG = "MyApplication";
+    private boolean isAdLoaded;
 
     @Override
     public void onCreate() {
@@ -45,8 +46,20 @@ public class Application extends android.app.Application
         appOpenAdManager = new AppOpenAdManager(new AppOpenAdManager.OnAddLoadCallback() {
             @Override
             public void onAdLoaded() {
-                if (currentActivity instanceof SplashActivity) {
-                    ((SplashActivity) currentActivity).showAppOpenAd(Application.this);
+                tryShowSplashAd();
+            }
+
+            @Override
+            public void onShow() {
+                if (currentActivity instanceof SplashActivity){
+                    ((SplashActivity) currentActivity).notifyAdShown();
+                }
+            }
+
+            @Override
+            public void onComplete() {
+                if (currentActivity instanceof SplashActivity){
+                    ((SplashActivity) currentActivity).notifyAdComplete();
                 }
             }
 
@@ -59,9 +72,14 @@ public class Application extends android.app.Application
 
     @Override
     public void onStart(@NonNull LifecycleOwner owner) {
-//        DefaultLifecycleObserver.super.onStart(owner);
         appOpenAdManager.showAdIfAvailable(currentActivity);
 
+    }
+
+    private void tryShowSplashAd(){
+        if (currentActivity instanceof SplashActivity) {
+            appOpenAdManager.showAdIfAvailable(currentActivity);
+        }
     }
 
     /**
