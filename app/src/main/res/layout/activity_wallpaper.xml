@@ -139,6 +139,7 @@
 
     <com.google.android.gms.ads.AdView
         android:layout_alignParentBottom="true"
+        android:minHeight="50dp"
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_width="match_parent"
