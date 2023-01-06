@@ -63,31 +63,45 @@ public class WallpaperActivity extends AppCompatActivity {
     private static final String TAG = "WallpaperActivity";
 
     private Bitmap imageBitmap;
+    private SQLHelper sqlHelper;
+    private WallsPOJO pojo;
+
+    //    Views
     private PhotoView photoView;
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private View topShadow, bottomShadow;
     private LinearLayout bottomNavLayout;
-    private SQLHelper sqlHelper;
-    private WallsPOJO pojo;
 
+    //    ads
     private InterstitialAd mInterstitialAd;
     private RewardedAd mRewardedAd;
     private AdView bannerAdView;
 
-    private boolean isAdShown = false;
+    //    conditions for not showing ads multiple times
+    boolean isInterstitialApplyShown = false;
+    boolean isInterstitialSaveShown = false;
+    boolean isRewardedApplyShown = false;
+    boolean isRewardedSaveShown = false;
+
+    //    dynamic message showing on task complete and ad shown
+    private boolean isProcessCompleted = false;
     private String message;
-    private void processStart(String message){
+
+    private void processStart(String message) {
         progressBar.setVisibility(View.VISIBLE);
         this.message = message;
-        isAdShown = true;
+        isProcessCompleted = true;
     }
-    private void processStopIfDone(){
-        if (isAdShown) {
-            progressBar.setVisibility(View.GONE);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+    private void processStopIfDone() {
+        if (isProcessCompleted) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }, 800);
         }
-        isAdShown = false;
+        isProcessCompleted = false;
     }
 
     @Override
@@ -197,8 +211,8 @@ public class WallpaperActivity extends AppCompatActivity {
         bannerAdView.loadAd(adRequest);
     }
 
-    private void showInterstitial() {
-        if (mInterstitialAd != null){
+    private void showInterstitial(boolean isForSaveImage) {
+        if (mInterstitialAd != null) {
             mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
@@ -218,6 +232,11 @@ public class WallpaperActivity extends AppCompatActivity {
                 @Override
                 public void onAdShowedFullScreenContent() {
                     super.onAdShowedFullScreenContent();
+                    if (isForSaveImage) {
+                        isInterstitialSaveShown = true;
+                    } else {
+                        isInterstitialApplyShown = true;
+                    }
                 }
             });
             mInterstitialAd.show(this);
@@ -251,12 +270,12 @@ public class WallpaperActivity extends AppCompatActivity {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
 //        save button click
         saveButton.setOnClickListener(view -> {
-            if (isStoragePermissionNotGranted()){
+            if (isStoragePermissionNotGranted()) {
                 ActivityCompat.requestPermissions(WallpaperActivity.this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return;
             }
-            if (pojo.isPremium()) {
+            if (pojo.isPremium() && !isRewardedSaveShown) {
                 showWatchAdDialog(true);
                 return;
             }
@@ -265,7 +284,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
 //        apply button click
         applyButton.setOnClickListener(view -> {
-            if (pojo.isPremium()) {
+            if (pojo.isPremium() && !isRewardedApplyShown) {
                 showWatchAdDialog(false);
                 return;
             }
@@ -300,7 +319,7 @@ public class WallpaperActivity extends AppCompatActivity {
         }
     }
 
-//    apply blur on bitmap
+    //    apply blur on bitmap
     private static Bitmap fastBlur(Context context, Bitmap source) {
         Bitmap bitmap = source.copy(source.getConfig(), true);
         RenderScript rs = RenderScript.create(context);
@@ -325,10 +344,13 @@ public class WallpaperActivity extends AppCompatActivity {
         final boolean isSaved = Utils.save(this, imageBitmap, getString(R.string.app_name),
                 pojo.getName().replaceAll("\\s", "_"));
 //        delay of 500ms
-        new Handler(Looper.getMainLooper()).postDelayed(()->{
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
 //            progressBar.setVisibility(View.GONE);
             if (isSaved) {
-                showInterstitial();
+                if (isInterstitialSaveShown)
+                    processStopIfDone();
+                else
+                    showInterstitial(true);
 //                Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
             } else {
                 message = "Error while saving image.";
@@ -403,7 +425,15 @@ public class WallpaperActivity extends AppCompatActivity {
     private void applyWallpaper(int where) {
         processStart(getString(R.string.success_applied));
         WallpaperSetter.apply(this, imageBitmap, where, b -> {
-            showInterstitial();
+            if (b) {
+                if (isInterstitialApplyShown)
+                    processStopIfDone();
+                else
+                    showInterstitial(false);
+            } else {
+                message = "Failed to apply wallpaper";
+                processStopIfDone();
+            }
         });
     }
 
@@ -440,8 +470,10 @@ public class WallpaperActivity extends AppCompatActivity {
         if (mRewardedAd != null) {
             mRewardedAd.show(this, rewardItem -> {
                 if (isForSaveImage) {
+                    isRewardedSaveShown = true;
                     saveImage();
                 } else {
+                    isRewardedApplyShown = true;
                     askOrApplyWallpaper();
                 }
             });
