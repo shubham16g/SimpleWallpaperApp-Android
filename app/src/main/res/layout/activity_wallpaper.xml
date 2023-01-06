@@ -27,7 +27,7 @@
     <View
         android:id="@+id/bottom_shadow"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="150dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/gradient_bottom" />
 
@@ -57,10 +57,10 @@
 
     <LinearLayout
         android:id="@+id/bottomButtonNav"
-        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@id/adView"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -137,6 +137,16 @@
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+        android:layout_alignParentBottom="true"
+        android:minHeight="50dp"
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/set_wallpaper_banner_id"/>
 
     <ProgressBar
         android:id="@+id/full_progressbar"

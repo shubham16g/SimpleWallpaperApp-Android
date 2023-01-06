@@ -1,30 +1,139 @@
 package com.shubhamgupta16.simplewallpaper;
 
-import android.content.SharedPreferences;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.PreferenceManager;
+import android.app.Activity;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.os.Bundle;
+import android.util.Log;
 
-public class Application extends android.app.Application {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
+import com.google.android.gms.ads.MobileAds;
+import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
+import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
+import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
+import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.utils.Utils;
+
+
+public class Application extends android.app.Application
+        implements ActivityLifecycleCallbacks, DefaultLifecycleObserver {
+
+    private AppOpenAdManager appOpenAdManager;
+    private Activity currentActivity;
+
+    private static final String TAG = "MyApplication";
+
+    private int interstitialAfterClicks;
+    private int cardClicks;
+    public void interstitialShown(){
+        Log.d(TAG, "interstitialShown: called");
+        cardClicks = 0;
+    }
+    public boolean canShowInterstitial(){
+        cardClicks++;
+        Log.d(TAG, "canShowInterstitial: " + cardClicks);
+        return cardClicks >= interstitialAfterClicks;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
-        final String[] themesLatest = getResources().getStringArray(R.array.theme_values_latest);
+        this.registerActivityLifecycleCallbacks(this);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String newVal = prefs.getString("theme", null);
-        if (newVal == null) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.getDefaultNightMode());
-        } else if (newVal.equals(themesLatest[0])) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else if (newVal.equals(themesLatest[1])) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else if (newVal.equals(themesLatest[2])) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        } else if (newVal.equals(themesLatest[3])) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+        interstitialAfterClicks = getResources().getInteger(R.integer.interstitial_after_clicks);
+        cardClicks = interstitialAfterClicks - 2;
+        Utils.initTheme(this);
+
+        InitSQL initSQL = new InitSQL(this, new SQLHelper(this));
+
+        initSQL.setupCategories();
+        initSQL.setupWallpapers();
+
+
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        appOpenAdManager = new AppOpenAdManager(getString(R.string.open_app_ad_id), new AppOpenAdManager.OnAddLoadCallback() {
+            @Override
+            public void onAdLoaded() {
+                tryShowSplashAd();
+            }
+
+            @Override
+            public void onAdLoadFailed() {
+
+            }
+
+            @Override
+            public void onAdShown() {
+                if (currentActivity instanceof SplashActivity){
+                    ((SplashActivity) currentActivity).notifyAdShown();
+                }
+            }
+
+            @Override
+            public void onAdShowError() {
+
+            }
+
+            @Override
+            public void onAdComplete() {
+                if (currentActivity instanceof SplashActivity){
+                    ((SplashActivity) currentActivity).notifyAdComplete();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        appOpenAdManager.showAdIfAvailable(currentActivity);
+
+    }
+
+    private void tryShowSplashAd(){
+        if (currentActivity instanceof SplashActivity) {
+            appOpenAdManager.showAdIfAvailable(currentActivity);
         }
+    }
+
+    /**
+     * ActivityLifecycleCallback methods.
+     */
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) {
+        if (!appOpenAdManager.isShowingAd) {
+            currentActivity = activity;
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+    }
+
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {
     }
 
 }

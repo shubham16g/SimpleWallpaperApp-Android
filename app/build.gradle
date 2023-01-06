@@ -24,10 +24,14 @@ android {
         resValue("string", "privicy_policy", secretProperties['PRIVACY_POLICY_URL'])
 
         resValue("string", "main_banner_id", secretProperties['MAIN_BANNER_ID'])
-        resValue("string", "splash_interstitial_id", secretProperties['SPLASH_INTERSTITIAL_ID'])
+        resValue("string", "more_banner_id", secretProperties['MORE_BANNER_ID'])
+        resValue("string", "set_wallpaper_banner_id", secretProperties['SET_WALLPAPER_BANNER_ID'])
+        resValue("string", "open_app_ad_id", secretProperties['OPEN_APP_AD_ID'])
         resValue("string", "set_wallpaper_interstitial_id", secretProperties['SET_WALLPAPER_INTERSTITIAL_ID'])
         resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
         resValue("string", "rewarded_ad_id", secretProperties['REWARDED_AD_ID'])
+        resValue("integer", "splash_screen_timeout", secretProperties['SPLASH_SCREEN_TIMEOUT'])
+        resValue("integer", "interstitial_after_clicks", secretProperties['INTERSTITIAL_AFTER_CLICKS'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +57,9 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.0'
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+
+    implementation "androidx.lifecycle:lifecycle-process:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-runtime:2.5.1"
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.github.bumptech.glide:glide:4.14.2'

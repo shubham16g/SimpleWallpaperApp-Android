@@ -24,7 +24,7 @@
             android:name="com.shubhamgupta16.simplewallpaper.fragments.WallsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/bottomNav"
+            android:layout_above="@id/adView"
             android:layout_below="@id/toolbar"
             tools:layout="@layout/fragment_reycler" />
 
@@ -33,7 +33,7 @@
             android:name="com.shubhamgupta16.simplewallpaper.fragments.CategoryFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/bottomNav"
+            android:layout_above="@id/adView"
             android:layout_below="@id/toolbar"
             tools:layout="@layout/fragment_reycler" />
 
@@ -42,9 +42,18 @@
             android:name="com.shubhamgupta16.simplewallpaper.fragments.WallsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/bottomNav"
+            android:layout_above="@id/adView"
             android:layout_below="@id/toolbar"
             tools:layout="@layout/fragment_reycler" />
+
+        <com.google.android.gms.ads.AdView
+            android:layout_above="@id/bottomNav"
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/main_banner_id"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"

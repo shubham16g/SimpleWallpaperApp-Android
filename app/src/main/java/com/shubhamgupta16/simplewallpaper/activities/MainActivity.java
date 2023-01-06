@@ -1,5 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.activities;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -14,6 +15,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private WallsFragment favoriteFragment;
     private int currentFragPos = 0;
     private MenuItem searchItem;
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +42,17 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        initAd();
         init();
+    }
+
+    private void initAd() {
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
     }
 
     @Override
@@ -51,7 +65,23 @@ public class MainActivity extends AppCompatActivity {
             favoriteFragment.focus();
     }
 
+    @Override
+    protected void onPause() {
+        adView.pause();
+        super.onPause();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adView.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adView.destroy();
+        super.onDestroy();
+    }
 
     private void searchFilter(String query) {
         Log.d("tagtag", "search");
@@ -156,19 +186,22 @@ public class MainActivity extends AppCompatActivity {
         favoriteFragment.setFragment(SQLHelper.TYPE_FAVORITE, null);
         wallsFragment.setFragment(SQLHelper.TYPE_NONE, null);
         categoryFragment.setFragment(null);
-        switchFrag(0, false);
 
         BottomNavigationView bNav = findViewById(R.id.bottomNav);
         bNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.action_walls)
-                switchFrag(0, true);
-            else if (id == R.id.action_category)
-                switchFrag(1, true);
-            else if (id == R.id.action_favorite)
-                switchFrag(2, true);
+            switchFrag(getPositionById(item.getItemId()), true);
             return true;
         });
+
+        bNav.setSelectedItemId(R.id.action_walls);
+        switchFrag(0, false);
+    }
+
+    private int getPositionById(@IdRes int id){
+        if (id == R.id.action_walls) return 0;
+        else if (id == R.id.action_category) return 1;
+        else if (id == R.id.action_favorite) return 2;
+        else return 0;
     }
 
     private void switchFrag(int position, boolean animate) {

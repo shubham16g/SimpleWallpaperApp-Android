@@ -86,7 +86,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
         holder.premiumImage.setVisibility(pojo.isPremium() ? View.VISIBLE : View.GONE);
         holder.heartImage.setVisibility(pojo.isPremium() ? View.GONE : View.VISIBLE);
-        Glide.with(context).load(pojo.getPreviewUrl()).sizeMultiplier(0.3f).into(holder.imageView);
+        Glide.with(context).load(pojo.getPreviewUrl()).into(holder.imageView);
         holder.title.setText(pojo.getName());
         holder.card.setOnClickListener(view -> {
             Intent i = new Intent(context, WallpaperActivity.class);
@@ -110,8 +110,8 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
                     list.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, list.size());
-                    if (onRemoveFromFavSecotion != null)
-                        onRemoveFromFavSecotion.onRemove();
+                    if (onRemoveFromFavSection != null)
+                        onRemoveFromFavSection.onRemove();
                 } else {
                     heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                 }
@@ -150,13 +150,13 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             }
         }
     }
-    private OnRemoveFromFavSecotion onRemoveFromFavSecotion;
+    private OnRemoveFromFavSection onRemoveFromFavSection;
 
-    public void setOnRemoveFromFavSecotion(OnRemoveFromFavSecotion onRemoveFromFavSecotion) {
-        this.onRemoveFromFavSecotion = onRemoveFromFavSecotion;
+    public void setOnRemoveFromFavSection(OnRemoveFromFavSection onRemoveFromFavSection) {
+        this.onRemoveFromFavSection = onRemoveFromFavSection;
     }
 
-    public interface OnRemoveFromFavSecotion {
+    public interface OnRemoveFromFavSection {
         void onRemove();
     }
 
