@@ -19,6 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.adapters.WallsAdapter;
@@ -28,6 +34,7 @@ import java.util.ArrayList;
 
 public class WallsFragment extends Fragment {
 
+    private static final String TAG = "WallsFragment";
 
     public WallsFragment() {
         // Required empty public constructor
@@ -35,6 +42,8 @@ public class WallsFragment extends Fragment {
 
     private View view;
     private ArrayList<WallsPOJO> list;
+    private ArrayList<Integer> adPositionList;
+    private ArrayList<NativeAd> nativeAdList;
     private WallsAdapter adapter;
     private SQLHelper sqlHelper;
     private boolean isScrollLoad = false;
@@ -55,6 +64,8 @@ public class WallsFragment extends Fragment {
         Log.d("tagtag", "init");
         sqlHelper = new SQLHelper(getContext());
         list = new ArrayList<>();
+        adPositionList = new ArrayList<>();
+        nativeAdList = new ArrayList<>();
         errorLayout = view.findViewById(R.id.errorLayout);
         RecyclerView wallsRecycler = view.findViewById(R.id.recyclerView);
         final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
@@ -92,6 +103,41 @@ public class WallsFragment extends Fragment {
                 }
             }
         });
+        loadNativeAds();
+    }
+
+    private void loadNativeAds() {
+        AdLoader adLoader = new AdLoader.Builder(requireContext(), getString(R.string.native_ad_id))
+                .forNativeAd(nativeAd -> {
+                    if (requireActivity().isDestroyed()) {
+                        nativeAd.destroy();
+                        return;
+                    }
+                    Log.d(TAG, "loadNativeAds: called");
+                    nativeAdList.add(nativeAd);
+                    if (!adPositionList.isEmpty()) {
+                        Log.d(TAG, "apl: " + adPositionList);
+                        for (int i = 0; i < adPositionList.size(); i++) {
+                            int pos = adPositionList.get(i);
+                            int adPos = i % nativeAdList.size();
+                            list.set(pos, new WallsPOJO(nativeAdList.get(adPos)));
+                            adapter.notifyItemChanged(pos);
+                        }
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+//                            holder.adView.setVisibility(View.GONE);
+                        // Handle the failure by logging, altering the UI, and so on.
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        // Methods in the NativeAdOptions.Builder class can be
+                        // used here to specify individual options settings.
+                        .build())
+                .build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 2);
     }
 
     private int type = SQLHelper.TYPE_NONE;
@@ -159,10 +205,16 @@ public class WallsFragment extends Fragment {
         int from = list.size();
         list.addAll(walls);
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
-//            Toast.makeText(getContext(), maxPage + "", Toast.LENGTH_SHORT).show();
-            list.add(new WallsPOJO(0, null, null, "ad", null, false));
-            list.add(new WallsPOJO(0, null, null, null, null, false));
-            list.add(new WallsPOJO(0, null, null, null, null, false));
+            adPositionList.add(list.size());
+
+            if (nativeAdList.isEmpty()){
+                list.add(new WallsPOJO(null));
+            } else {
+                int adPos = (adPositionList.size() - 1) % nativeAdList.size();
+                list.add(new WallsPOJO(nativeAdList.get(adPos)));
+            }
+            list.add(new WallsPOJO());
+            list.add(new WallsPOJO());
         }
 
         adapter.notifyItemRangeInserted(from, list.size());
@@ -179,6 +231,7 @@ public class WallsFragment extends Fragment {
         maxPage = sqlHelper.getPagesCount(type, extras);
         if (type == SQLHelper.TYPE_FAVORITE) {
             int size = list.size();
+            adPositionList.clear();
             list.clear();
             if (size > 0) {
                 adapter.notifyDataSetChanged();
