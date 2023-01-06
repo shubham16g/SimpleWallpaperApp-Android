@@ -1,7 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.activities;
 
 import android.Manifest;
-import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -71,7 +70,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private PhotoView photoView;
     private Toolbar toolbar;
     private ProgressBar progressBar;
-    private View topShadow, bottomShadow;
+    private View topShadow, bottomShadow, saveButton, applyButton, favoriteButton;
     private LinearLayout bottomNavLayout;
 
     //    ads
@@ -132,6 +131,9 @@ public class WallpaperActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.full_progressbar);
         bottomNavLayout = findViewById(R.id.bottomButtonNav);
         bannerAdView = findViewById(R.id.adView);
+        saveButton = bottomNavLayout.getChildAt(0);
+        applyButton = bottomNavLayout.getChildAt(1);
+        favoriteButton = bottomNavLayout.getChildAt(2);
 
 //        apply margin for status-bar and navigation-bar
         ViewCompat.setOnApplyWindowInsetsListener(mDecorView, (v, insets) -> {
@@ -260,9 +262,6 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     private void setupBottomNav() {
-        View saveButton = bottomNavLayout.getChildAt(0);
-        View applyButton = bottomNavLayout.getChildAt(1);
-        View favoriteButton = bottomNavLayout.getChildAt(2);
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
         if (sqlHelper.isFavorite(pojo.getId()))
@@ -346,13 +345,11 @@ public class WallpaperActivity extends AppCompatActivity {
                 pojo.getName().replaceAll("\\s", "_"));
 //        delay of 500ms
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//            progressBar.setVisibility(View.GONE);
             if (isSaved) {
                 if (isInterstitialSaveShown)
                     processStopIfDone();
                 else
                     showInterstitial(true);
-//                Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
             } else {
                 message = "Error while saving image.";
                 processStopIfDone();
@@ -425,35 +422,19 @@ public class WallpaperActivity extends AppCompatActivity {
             topShadow.animate().alpha(1).setDuration(200);
             bottomShadow.animate().alpha(1).setDuration(200);
             bottomNavLayout.animate().alpha(1).setDuration(200);
+            saveButton.setClickable(true);
+            applyButton.setClickable(true);
+            favoriteButton.setClickable(true);
+            toolbar.setNavigationOnClickListener(v->finish());
         } else {
             toolbar.animate().alpha(0).setDuration(200);
             topShadow.animate().alpha(0).setDuration(200);
             bottomShadow.animate().alpha(0).setDuration(200);
-            bottomNavLayout.animate().alpha(0).setDuration(200).setListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(@NonNull Animator animator) {
-                    if (bottomNavLayout.getVisibility() == View.VISIBLE) {
-                        bottomNavLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public void onAnimationEnd(@NonNull Animator animator) {
-                    if (bottomNavLayout.getVisibility() == View.GONE) {
-                        bottomNavLayout.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onAnimationCancel(@NonNull Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(@NonNull Animator animator) {
-
-                }
-            });
+            bottomNavLayout.animate().alpha(0).setDuration(200);
+            saveButton.setClickable(false);
+            applyButton.setClickable(false);
+            favoriteButton.setClickable(false);
+            toolbar.setNavigationOnClickListener(null);
         }
     }
 

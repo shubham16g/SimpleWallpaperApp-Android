@@ -24,12 +24,14 @@ public class Application extends android.app.Application
     private AppOpenAdManager appOpenAdManager;
     private Activity currentActivity;
 
-    private long interstitialShownTime = 0;
+    private int interstitialAfterClicks;
+    private int cardClicks;
     public void interstitialShown(){
-        interstitialShownTime = System.currentTimeMillis();
+        cardClicks = 0;
     }
     public boolean canShowInterstitial(){
-        return System.currentTimeMillis() > (interstitialShownTime + getResources().getInteger(R.integer.interstitial_show_period));
+        cardClicks++;
+        return cardClicks >= interstitialAfterClicks;
     }
 
     @Override
@@ -37,6 +39,8 @@ public class Application extends android.app.Application
         super.onCreate();
         this.registerActivityLifecycleCallbacks(this);
 
+        interstitialAfterClicks = getResources().getInteger(R.integer.interstitial_after_clicks);
+        cardClicks = interstitialAfterClicks - 2;
         Utils.initTheme(this);
 
         InitSQL initSQL = new InitSQL(this, new SQLHelper(this));

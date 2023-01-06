@@ -31,7 +31,7 @@ android {
         resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
         resValue("string", "rewarded_ad_id", secretProperties['REWARDED_AD_ID'])
         resValue("integer", "splash_screen_timeout", secretProperties['SPLASH_SCREEN_TIMEOUT'])
-        resValue("integer", "interstitial_show_period", secretProperties['INTERSTITIAL_SHOW_PERIOD'])
+        resValue("integer", "interstitial_after_clicks", secretProperties['INTERSTITIAL_AFTER_CLICKS'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
