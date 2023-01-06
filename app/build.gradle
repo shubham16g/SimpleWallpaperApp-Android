@@ -24,7 +24,9 @@ android {
         resValue("string", "privicy_policy", secretProperties['PRIVACY_POLICY_URL'])
 
         resValue("string", "main_banner_id", secretProperties['MAIN_BANNER_ID'])
-        resValue("string", "splash_interstitial_id", secretProperties['SPLASH_INTERSTITIAL_ID'])
+        resValue("string", "more_banner_id", secretProperties['MORE_BANNER_ID'])
+        resValue("string", "set_wallpaper_banner_id", secretProperties['SET_WALLPAPER_BANNER_ID'])
+        resValue("string", "open_app_ad_id", secretProperties['OPEN_APP_AD_ID'])
         resValue("string", "set_wallpaper_interstitial_id", secretProperties['SET_WALLPAPER_INTERSTITIAL_ID'])
         resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
         resValue("string", "rewarded_ad_id", secretProperties['REWARDED_AD_ID'])

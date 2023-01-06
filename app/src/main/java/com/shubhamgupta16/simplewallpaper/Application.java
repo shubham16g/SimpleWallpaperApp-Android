@@ -50,7 +50,7 @@ public class Application extends android.app.Application
         });
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        appOpenAdManager = new AppOpenAdManager(new AppOpenAdManager.OnAddLoadCallback() {
+        appOpenAdManager = new AppOpenAdManager(getString(R.string.open_app_ad_id), new AppOpenAdManager.OnAddLoadCallback() {
             @Override
             public void onAdLoaded() {
                 tryShowSplashAd();

@@ -17,12 +17,12 @@ import java.util.Date;
 public class AppOpenAdManager {
 
     private static final String LOG_TAG = "AppOpenAdManager";
-    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/3419835294";
 
     private AppOpenAd appOpenAd = null;
     public boolean isLoadingAd = false;
     public boolean isShowingAd = false;
 
+    private final String adUnitId;
     private final OnAddLoadCallback onAddLoadCallback;
 
     /**
@@ -33,7 +33,8 @@ public class AppOpenAdManager {
     /**
      * Constructor.
      */
-    public AppOpenAdManager(@NonNull OnAddLoadCallback onAddLoadCallback) {
+    public AppOpenAdManager(String adUnitId, @NonNull OnAddLoadCallback onAddLoadCallback) {
+        this.adUnitId = adUnitId;
         this.onAddLoadCallback = onAddLoadCallback;
     }
 
@@ -52,7 +53,7 @@ public class AppOpenAdManager {
         AdRequest request = new AdRequest.Builder().build();
         AppOpenAd.load(
                 context,
-                AD_UNIT_ID,
+                adUnitId,
                 request,
                 AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
                 new AppOpenAd.AppOpenAdLoadCallback() {
