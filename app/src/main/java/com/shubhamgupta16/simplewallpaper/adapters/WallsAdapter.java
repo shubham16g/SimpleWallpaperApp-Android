@@ -15,13 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
-import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
@@ -62,9 +57,9 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        if (list.get(position).getUrl() == null)
+        if (list.get(position).getId() == -1)
             return 0;
-        else if (list.get(position).getUrl().equals("ad"))
+        else if (list.get(position).getId() == -2)
             return 2;
         else return 1;
 
@@ -72,34 +67,23 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        WallsPOJO pojo = list.get(position);
+
         if (getItemViewType(position) == 0)
             return;
         if (getItemViewType(position) == 2) {
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
             layoutParams.setFullSpan(true);
-            AdLoader adLoader = new AdLoader.Builder(context, context.getString(R.string.native_ad_id))
-                    .forNativeAd(nativeAd -> {
-                        NativeAdView unifiedNativeAdView = holder.adView;
-                        unifiedNativeAdView.setVisibility(View.VISIBLE);
-                        mapUnifiedNativeAdToLayout(nativeAd, unifiedNativeAdView);
-                    })
-                    .withAdListener(new AdListener() {
-                        @Override
-                        public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-//                            holder.adView.setVisibility(View.GONE);
-                            // Handle the failure by logging, altering the UI, and so on.
-                        }
-                    })
-                    .withNativeAdOptions(new NativeAdOptions.Builder()
-                            // Methods in the NativeAdOptions.Builder class can be
-                            // used here to specify individual options settings.
-                            .build())
-                    .build();
-            adLoader.loadAd(new AdRequest.Builder().build());
+
+            NativeAd ad = pojo.getNativeAd();
+            if (ad != null) {
+                NativeAdView unifiedNativeAdView = holder.adView;
+                unifiedNativeAdView.setVisibility(View.VISIBLE);
+                mapUnifiedNativeAdToLayout(pojo.getNativeAd(), unifiedNativeAdView);
+            }
             return;
         }
 
-        WallsPOJO pojo = list.get(position);
         holder.premiumImage.setVisibility(pojo.isPremium() ? View.VISIBLE : View.GONE);
         holder.heartImage.setVisibility(pojo.isPremium() ? View.GONE : View.VISIBLE);
         Glide.with(context).load(pojo.getPreviewUrl()).sizeMultiplier(0.3f).into(holder.imageView);
