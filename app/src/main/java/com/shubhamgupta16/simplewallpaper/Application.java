@@ -29,9 +29,8 @@ public class Application extends android.app.Application
         interstitialShownTime = System.currentTimeMillis();
     }
     public boolean canShowInterstitial(){
-        return System.currentTimeMillis() > (interstitialShownTime + 60 * 1000);
+        return System.currentTimeMillis() > (interstitialShownTime + getResources().getInteger(R.integer.interstitial_show_period));
     }
-
 
     @Override
     public void onCreate() {

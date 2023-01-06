@@ -13,8 +13,6 @@ import com.shubhamgupta16.simplewallpaper.R;
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
-    private static final long SPLASH_DURATION_SECONDS = 5;
-
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
@@ -22,8 +20,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Within SPLASH_DURATION_SECONDS, redirect to MainActivity
-        handler.postDelayed(runnable, SPLASH_DURATION_SECONDS * 1000);
+        // Within SPLASH_SCREEN_TIMEOUT, redirect to MainActivity if ad not shown
+        handler.postDelayed(runnable, getResources().getInteger(R.integer.splash_screen_timeout));
     }
 
     private final Runnable runnable = this::startMainActivity;

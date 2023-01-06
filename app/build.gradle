@@ -30,6 +30,8 @@ android {
         resValue("string", "set_wallpaper_interstitial_id", secretProperties['SET_WALLPAPER_INTERSTITIAL_ID'])
         resValue("string", "native_ad_id", secretProperties['NATIVE_AD_ID'])
         resValue("string", "rewarded_ad_id", secretProperties['REWARDED_AD_ID'])
+        resValue("integer", "splash_screen_timeout", secretProperties['SPLASH_SCREEN_TIMEOUT'])
+        resValue("integer", "interstitial_show_period", secretProperties['INTERSTITIAL_SHOW_PERIOD'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,7 +60,6 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-process:2.5.1"
     implementation "androidx.lifecycle:lifecycle-runtime:2.5.1"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.5.1"
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.github.bumptech.glide:glide:4.14.2'
