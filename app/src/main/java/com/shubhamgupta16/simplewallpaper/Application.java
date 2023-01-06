@@ -3,6 +3,7 @@ package com.shubhamgupta16.simplewallpaper;
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,13 +25,17 @@ public class Application extends android.app.Application
     private AppOpenAdManager appOpenAdManager;
     private Activity currentActivity;
 
+    private static final String TAG = "MyApplication";
+
     private int interstitialAfterClicks;
     private int cardClicks;
     public void interstitialShown(){
+        Log.d(TAG, "interstitialShown: called");
         cardClicks = 0;
     }
     public boolean canShowInterstitial(){
         cardClicks++;
+        Log.d(TAG, "canShowInterstitial: " + cardClicks);
         return cardClicks >= interstitialAfterClicks;
     }
 

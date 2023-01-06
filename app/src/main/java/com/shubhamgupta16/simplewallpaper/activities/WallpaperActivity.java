@@ -383,6 +383,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
+        Log.d(TAG, "finish: called -> " + (mInterstitialAd != null));
         if (!(getApplication() instanceof Application)){
             super.finish();
         }
