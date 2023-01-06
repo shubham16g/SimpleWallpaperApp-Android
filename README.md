@@ -32,6 +32,9 @@ This is a simple demo wallpaper 🏞️ app which contains wallpaper links 🔗 
     <img src="https://user-images.githubusercontent.com/55009858/208888997-67b3d3aa-860d-40cc-ae9d-88bb14a5600d.png" alt="Light Theme" width="220">
 </p>
 
+## Support
+<p><a href="https://www.buymeacoffee.com/shubhamgupta16"> <img align="center" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="shubhamgupta16" /></a></p>
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
