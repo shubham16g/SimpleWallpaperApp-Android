@@ -24,6 +24,15 @@ public class Application extends android.app.Application
     private AppOpenAdManager appOpenAdManager;
     private Activity currentActivity;
 
+    private long interstitialShownTime = 0;
+    public void interstitialShown(){
+        interstitialShownTime = System.currentTimeMillis();
+    }
+    public boolean canShowInterstitial(){
+        return System.currentTimeMillis() > (interstitialShownTime + 60 * 1000);
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();

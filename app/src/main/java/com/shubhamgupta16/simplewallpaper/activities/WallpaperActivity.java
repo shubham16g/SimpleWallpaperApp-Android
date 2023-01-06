@@ -52,6 +52,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.shubhamgupta16.simplewallpaper.Application;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
@@ -383,6 +384,40 @@ public class WallpaperActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void finish() {
+        if (!(getApplication() instanceof Application)){
+            super.finish();
+        }
+        final Application application = (Application) getApplication();
+        if (mInterstitialAd != null && !isInterstitialApplyShown && !isInterstitialSaveShown && application.canShowInterstitial()) {
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    mInterstitialAd = null;
+                    finish();
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                    super.onAdFailedToShowFullScreenContent(adError);
+                    mInterstitialAd = null;
+                    finish();
+                }
+
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                    application.interstitialShown();
+                }
+            });
+            mInterstitialAd.show(this);
+        } else {
+            super.finish();
+        }
+//        super.finish();
+    }
 
     private void toggleTouch() {
         if (toolbar.getAlpha() == 0) {
