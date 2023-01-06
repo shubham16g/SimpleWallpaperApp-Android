@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -40,8 +42,10 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
@@ -66,37 +70,55 @@ public class WallpaperActivity extends AppCompatActivity {
     private LinearLayout bottomNavLayout;
     private SQLHelper sqlHelper;
     private WallsPOJO pojo;
+
     private InterstitialAd mInterstitialAd;
     private RewardedAd mRewardedAd;
-    private AdView adView;
+    private AdView bannerAdView;
 
+    private boolean isAdShown = false;
+    private String message;
+    private void processStart(String message){
+        progressBar.setVisibility(View.VISIBLE);
+        this.message = message;
+        isAdShown = true;
+    }
+    private void processStopIfDone(){
+        if (isAdShown) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+        isAdShown = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper);
 
+//        get the wallpaper pojo. if not exist, finish page.
         if (!getIntent().hasExtra("pojo")) {
             Toast.makeText(this, "Image Not Valid!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
+        pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
+
+//        apply full screen
         View mDecorView = getWindow().getDecorView();
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.parseColor("#01FFFFFF"));
 
+//        bind xml views
         toolbar = findViewById(R.id.full_view_toolbar);
         topShadow = findViewById(R.id.top_shadow);
         bottomShadow = findViewById(R.id.bottom_shadow);
         photoView = findViewById(R.id.photo_view);
         progressBar = findViewById(R.id.full_progressbar);
         bottomNavLayout = findViewById(R.id.bottomButtonNav);
-        adView = findViewById(R.id.adView);
-        sqlHelper = new SQLHelper(this);
+        bannerAdView = findViewById(R.id.adView);
 
-
-
+//        apply margin for status-bar and navigation-bar
         ViewCompat.setOnApplyWindowInsetsListener(mDecorView, (v, insets) -> {
             final int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top; // in px
             final int navigationBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom; // in px
@@ -105,31 +127,30 @@ public class WallpaperActivity extends AppCompatActivity {
             toolbarLayoutParams.setMargins(0, statusBarHeight, 0, 0);
             toolbar.setLayoutParams(toolbarLayoutParams);
 
-            RelativeLayout.LayoutParams navLayoutLayoutParams = (RelativeLayout.LayoutParams) adView.getLayoutParams();
+            RelativeLayout.LayoutParams navLayoutLayoutParams = (RelativeLayout.LayoutParams) bannerAdView.getLayoutParams();
             navLayoutLayoutParams.setMargins(0, 0, 0, navigationBarHeight);
-            adView.setLayoutParams(navLayoutLayoutParams);
+            bannerAdView.setLayoutParams(navLayoutLayoutParams);
             return WindowInsetsCompat.CONSUMED;
         });
 
+//        init helpers and ads
+        sqlHelper = new SQLHelper(this);
         initAd();
+        loadInterstitial();
 
-        pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
+//        init views
         setupBottomNav();
-
         toolbar.setNavigationOnClickListener(v -> finish());
-        initInterstitial();
-
         if (pojo.isPremium()) {
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
         }
-
         photoView.setOnPhotoTapListener((view, x, y) -> toggleTouch());
-
         photoView.setTag(false);
+
+//        load blur image into photoView
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                photoView.setCropToPadding(true);
                 if (photoView.getTag().equals(false)) {
                     photoView.setImageBitmap(fastBlur(WallpaperActivity.this, resource));
                 }
@@ -140,6 +161,7 @@ public class WallpaperActivity extends AppCompatActivity {
             }
         });
 
+//        load high res image into photoView
         Glide.with(this).asBitmap().load(pojo.getUrl()).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -165,7 +187,6 @@ public class WallpaperActivity extends AppCompatActivity {
             public void onLoadCleared(@Nullable Drawable placeholder) {
             }
         });
-
     }
 
     private void initAd() {
@@ -173,17 +194,41 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 
         AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        bannerAdView.loadAd(adRequest);
     }
 
     private void showInterstitial() {
-        if (mInterstitialAd != null)
+        if (mInterstitialAd != null){
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    mInterstitialAd = null;
+                    processStopIfDone();
+                    loadInterstitial();
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                    super.onAdFailedToShowFullScreenContent(adError);
+                    mInterstitialAd = null;
+                    processStopIfDone();
+                }
+
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                }
+            });
             mInterstitialAd.show(this);
+        } else {
+            processStopIfDone();
+        }
     }
 
-    private void initInterstitial() {
-        MobileAds.initialize(this, initializationStatus -> {
-        });
+    private void loadInterstitial() {
+//        never load interstitial for premium wallpaper
+        if (pojo.isPremium()) return;
 
         InterstitialAd.load(this, getString(R.string.set_wallpaper_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override
@@ -226,6 +271,7 @@ public class WallpaperActivity extends AppCompatActivity {
             }
             askOrApplyWallpaper();
         });
+//        favorite button click
         favoriteButton.setOnClickListener(view -> {
             if (sqlHelper.isFavorite(pojo.getId())) {
                 sqlHelper.toggleFavorite(pojo.getId(), false);
@@ -238,6 +284,7 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     public boolean isStoragePermissionNotGranted() {
+//        if api is below 29 and above/equal 23, WRITE_EXTERNAL_STORAGE required
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
         } else {
@@ -253,6 +300,7 @@ public class WallpaperActivity extends AppCompatActivity {
         }
     }
 
+//    apply blur on bitmap
     private static Bitmap fastBlur(Context context, Bitmap source) {
         Bitmap bitmap = source.copy(source.getConfig(), true);
         RenderScript rs = RenderScript.create(context);
@@ -271,23 +319,42 @@ public class WallpaperActivity extends AppCompatActivity {
         Log.d("TAG", "saveImage: called");
         if (isStoragePermissionNotGranted())
             return;
+
+//        saving
+        processStart("Image Saved Successfully!");
         final boolean isSaved = Utils.save(this, imageBitmap, getString(R.string.app_name),
                 pojo.getName().replaceAll("\\s", "_"));
-        if (isSaved) {
-            Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Error while saving image.", Toast.LENGTH_SHORT).show();
-        }
+//        delay of 500ms
+        new Handler(Looper.getMainLooper()).postDelayed(()->{
+//            progressBar.setVisibility(View.GONE);
+            if (isSaved) {
+                showInterstitial();
+//                Toast.makeText(this, "Image Saved Successfully!", Toast.LENGTH_SHORT).show();
+            } else {
+                message = "Error while saving image.";
+                processStopIfDone();
+            }
+        }, 500);
+
     }
 
     private void askOrApplyWallpaper() {
-        View v =  getLayoutInflater().inflate(R.layout.layout_set_on, null);
+        View v = getLayoutInflater().inflate(R.layout.layout_set_on, null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AlertDialog dialog = new AlertDialog.Builder(WallpaperActivity.this)
                     .setView(v).create();
-            v.findViewById(R.id.on_home_screen_btn).setOnClickListener(view -> applyWallpaper(1));
-            v.findViewById(R.id.on_lock_screen_btn).setOnClickListener(view -> applyWallpaper(2));
-            v.findViewById(R.id.on_both_screen_btn).setOnClickListener(view -> applyWallpaper(3));
+            v.findViewById(R.id.on_home_screen_btn).setOnClickListener(view -> {
+                dialog.dismiss();
+                applyWallpaper(1);
+            });
+            v.findViewById(R.id.on_lock_screen_btn).setOnClickListener(view -> {
+                dialog.dismiss();
+                applyWallpaper(2);
+            });
+            v.findViewById(R.id.on_both_screen_btn).setOnClickListener(view -> {
+                dialog.dismiss();
+                applyWallpaper(3);
+            });
             dialog.show();
         } else {
             applyWallpaper(0);
@@ -334,15 +401,8 @@ public class WallpaperActivity extends AppCompatActivity {
     }
 
     private void applyWallpaper(int where) {
-        progressBar.setVisibility(View.VISIBLE);
+        processStart(getString(R.string.success_applied));
         WallpaperSetter.apply(this, imageBitmap, where, b -> {
-            progressBar.setVisibility(View.GONE);
-            Intent intent = new Intent(WallpaperActivity.this, WallpaperActivity.class);
-            intent.putExtra("pojo", pojo);
-            startActivity(intent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            Toast.makeText(WallpaperActivity.this, getString(R.string.success_applied), Toast.LENGTH_SHORT).show();
-            finish();
             showInterstitial();
         });
     }
@@ -392,19 +452,19 @@ public class WallpaperActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        adView.pause();
+        bannerAdView.pause();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        adView.resume();
+        bannerAdView.resume();
     }
 
     @Override
     protected void onDestroy() {
-        adView.destroy();
+        bannerAdView.destroy();
         Intent i = new Intent();
         i.putExtra("id", pojo.getId());
         i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));
