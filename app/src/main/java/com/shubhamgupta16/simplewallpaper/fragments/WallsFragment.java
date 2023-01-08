@@ -109,7 +109,7 @@ public class WallsFragment extends Fragment {
     private void loadNativeAds() {
         AdLoader adLoader = new AdLoader.Builder(requireContext(), getString(R.string.native_ad_id))
                 .forNativeAd(nativeAd -> {
-                    if (requireActivity().isDestroyed()) {
+                    if (isDetached() || getActivity() == null) {
                         nativeAd.destroy();
                         return;
                     }
