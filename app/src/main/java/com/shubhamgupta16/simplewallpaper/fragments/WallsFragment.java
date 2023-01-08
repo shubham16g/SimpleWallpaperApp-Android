@@ -103,13 +103,12 @@ public class WallsFragment extends Fragment {
                 }
             }
         });
-        loadNativeAds();
     }
 
     private void loadNativeAds() {
         AdLoader adLoader = new AdLoader.Builder(requireContext(), getString(R.string.native_ad_id))
                 .forNativeAd(nativeAd -> {
-                    if (requireActivity().isDestroyed()) {
+                    if (isDetached() || getActivity() == null) {
                         nativeAd.destroy();
                         return;
                     }
@@ -157,6 +156,8 @@ public class WallsFragment extends Fragment {
         errorLayout.setVisibility(View.GONE);
         setErrorLayout();
         fetchWalls(1);
+        if (maxPage > 1 && nativeAdList.isEmpty())
+            loadNativeAds();
     }
 
     private void setErrorLayout() {
@@ -207,7 +208,7 @@ public class WallsFragment extends Fragment {
         if (page >= 1 && page != maxPage && !list.isEmpty()) {
             adPositionList.add(list.size());
 
-            if (nativeAdList.isEmpty()){
+            if (nativeAdList.isEmpty()) {
                 list.add(new WallsPOJO(null));
             } else {
                 int adPos = (adPositionList.size() - 1) % nativeAdList.size();
