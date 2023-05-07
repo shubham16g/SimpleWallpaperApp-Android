@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
@@ -92,7 +93,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
         holder.premiumImage.setVisibility(pojo.isPremium() ? View.VISIBLE : View.GONE);
         holder.heartImage.setVisibility(pojo.isPremium() ? View.GONE : View.VISIBLE);
-        Glide.with(context).load(pojo.getPreviewUrl()).into(holder.imageView);
+        Glide.with(context).load(pojo.getPreviewUrl()).transition(DrawableTransitionOptions.withCrossFade()).into(holder.imageView);
         holder.title.setText(pojo.getName());
         holder.card.setOnClickListener(view -> {
             Intent i = new Intent(context, WallpaperActivity.class);

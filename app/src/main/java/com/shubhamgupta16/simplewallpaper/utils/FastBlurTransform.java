@@ -3,16 +3,21 @@ package com.shubhamgupta16.simplewallpaper.utils;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-public class FastBlur {
-    public static Bitmap apply(Bitmap sentBitmap, float scale, int radius) {
 
-        int width = Math.round(sentBitmap.getWidth() * scale);
-        int height = Math.round(sentBitmap.getHeight() * scale);
+public class FastBlurTransform {
+
+    public static final float SCALE = 2;
+    public static final int RADIUS = 18;
+
+    public static Bitmap apply(Bitmap sentBitmap) {
+
+        int width = Math.round(sentBitmap.getWidth() * SCALE);
+        int height = Math.round(sentBitmap.getHeight() * SCALE);
         sentBitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false);
 
         Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
 
-        if (radius < 1) {
+        if (RADIUS < 1) {
             return (null);
         }
 
@@ -26,7 +31,7 @@ public class FastBlur {
         int wm = w - 1;
         int hm = h - 1;
         int wh = w * h;
-        int div = radius + radius + 1;
+        int div = RADIUS + RADIUS + 1;
 
         int[] r = new int[wh];
         int[] g = new int[wh];
@@ -49,15 +54,15 @@ public class FastBlur {
         int stackstart;
         int[] sir;
         int rbs;
-        int r1 = radius + 1;
+        int r1 = RADIUS + 1;
         int routsum, goutsum, boutsum, aoutsum;
         int rinsum, ginsum, binsum, ainsum;
 
         for (y = 0; y < h; y++) {
             rinsum = ginsum = binsum = ainsum = routsum = goutsum = boutsum = aoutsum = rsum = gsum = bsum = asum = 0;
-            for (i = -radius; i <= radius; i++) {
+            for (i = -RADIUS; i <= RADIUS; i++) {
                 p = pix[yi + Math.min(wm, Math.max(i, 0))];
-                sir = stack[i + radius];
+                sir = stack[i + RADIUS];
                 sir[0] = (p & 0xff0000) >> 16;
                 sir[1] = (p & 0x00ff00) >> 8;
                 sir[2] = (p & 0x0000ff);
@@ -80,7 +85,7 @@ public class FastBlur {
                     aoutsum += sir[3];
                 }
             }
-            stackpointer = radius;
+            stackpointer = RADIUS;
 
             for (x = 0; x < w; x++) {
 
@@ -94,7 +99,7 @@ public class FastBlur {
                 bsum -= boutsum;
                 asum -= aoutsum;
 
-                stackstart = stackpointer - radius + div;
+                stackstart = stackpointer - RADIUS + div;
                 sir = stack[stackstart % div];
 
                 routsum -= sir[0];
@@ -103,7 +108,7 @@ public class FastBlur {
                 aoutsum -= sir[3];
 
                 if (y == 0) {
-                    vmin[x] = Math.min(x + radius + 1, wm);
+                    vmin[x] = Math.min(x + RADIUS + 1, wm);
                 }
                 p = pix[yw + vmin[x]];
 
@@ -141,11 +146,11 @@ public class FastBlur {
         }
         for (x = 0; x < w; x++) {
             rinsum = ginsum = binsum = ainsum = routsum = goutsum = boutsum = aoutsum = rsum = gsum = bsum = asum = 0;
-            yp = -radius * w;
-            for (i = -radius; i <= radius; i++) {
+            yp = -RADIUS * w;
+            for (i = -RADIUS; i <= RADIUS; i++) {
                 yi = Math.max(0, yp) + x;
 
-                sir = stack[i + radius];
+                sir = stack[i + RADIUS];
 
                 sir[0] = r[yi];
                 sir[1] = g[yi];
@@ -176,7 +181,7 @@ public class FastBlur {
                 }
             }
             yi = x;
-            stackpointer = radius;
+            stackpointer = RADIUS;
             for (y = 0; y < h; y++) {
                 pix[yi] = (dv[asum] << 24) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
 
@@ -185,7 +190,7 @@ public class FastBlur {
                 bsum -= boutsum;
                 asum -= aoutsum;
 
-                stackstart = stackpointer - radius + div;
+                stackstart = stackpointer - RADIUS + div;
                 sir = stack[stackstart % div];
 
                 routsum -= sir[0];

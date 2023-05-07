@@ -194,12 +194,9 @@ public class WallsFragment extends Fragment {
         if (page != 1) {
             if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-                adapter.notifyItemRemoved(list.size());
             }
-
             if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-                adapter.notifyItemRemoved(list.size());
             }
         } else {
             progressBar.setVisibility(View.GONE);
@@ -218,8 +215,8 @@ public class WallsFragment extends Fragment {
             list.add(new WallsPOJO(false));
             list.add(new WallsPOJO(false));
         }
-
-        adapter.notifyItemRangeInserted(from, list.size());
+        adapter.notifyItemRangeChanged(from, 2);
+        adapter.notifyItemRangeInserted(from + 2, list.size());
 
         lastFetch = page;
         isScrollLoad = true;

@@ -51,7 +51,7 @@ import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.ApplyWallpaper;
-import com.shubhamgupta16.simplewallpaper.utils.FastBlur;
+import com.shubhamgupta16.simplewallpaper.utils.FastBlurTransform;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 import java.util.concurrent.ExecutorService;
@@ -61,6 +61,7 @@ public class WallpaperActivity extends AppCompatActivity {
 
     private static final String TAG = "WallpaperActivity";
 
+    private Handler handler;
     private Bitmap imageBitmap;
     private DataService dataService;
     private WallsPOJO pojo;
@@ -68,6 +69,7 @@ public class WallpaperActivity extends AppCompatActivity {
     //    Views
     private ImageView thumbView;
     private PhotoView photoView;
+    private boolean showThumbnail = true;
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private View topShadow, bottomShadow, saveButton, applyButton, favoriteButton;
@@ -116,7 +118,7 @@ public class WallpaperActivity extends AppCompatActivity {
             return;
         }
         pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
-
+        handler = new Handler(Looper.getMainLooper());
 //        apply full screen
         View mDecorView = getWindow().getDecorView();
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -169,7 +171,10 @@ public class WallpaperActivity extends AppCompatActivity {
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    thumbView.setImageBitmap(FastBlur.apply(resource, 1, 18));
+                if (!showThumbnail) return;
+                thumbView.setAlpha(0f);
+                thumbView.setImageBitmap(FastBlurTransform.apply(resource));
+                thumbView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(500).start();
             }
 
             @Override
@@ -181,6 +186,7 @@ public class WallpaperActivity extends AppCompatActivity {
         Glide.with(this).asBitmap().load(pojo.getUrl()).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                showThumbnail = false;
                 Toast.makeText(WallpaperActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -189,11 +195,24 @@ public class WallpaperActivity extends AppCompatActivity {
             @Override
             public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                 imageBitmap = resource;
+                showThumbnail = false;
                 photoView.setZoomable(true);
+                handler.postDelayed( () -> thumbView.setImageBitmap(null), 1000);
                 progressBar.setVisibility(View.GONE);
                 return false;
             }
-        }).into(photoView);
+        }).into(new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                photoView.setAlpha(0f);
+                photoView.setImageBitmap(resource);
+                photoView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(500).start();
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+            }
+        });
     }
 
     private void initAd() {
@@ -308,6 +327,7 @@ public class WallpaperActivity extends AppCompatActivity {
             saveImage();
         }
     }
+
     private void saveImage() {
         if (imageBitmap == null || pojo == null) return;
         Log.d("TAG", "saveImage: called");
@@ -359,7 +379,7 @@ public class WallpaperActivity extends AppCompatActivity {
     @Override
     public void finish() {
         Log.d(TAG, "finish: called -> " + (mInterstitialAd != null));
-        if (!(getApplication() instanceof MainApplication)){
+        if (!(getApplication() instanceof MainApplication)) {
             super.finish();
         }
         final MainApplication mainApplication = (MainApplication) getApplication();
@@ -402,7 +422,7 @@ public class WallpaperActivity extends AppCompatActivity {
             saveButton.setClickable(true);
             applyButton.setClickable(true);
             favoriteButton.setClickable(true);
-            toolbar.setNavigationOnClickListener(v->finish());
+            toolbar.setNavigationOnClickListener(v -> finish());
         } else {
             toolbar.animate().alpha(0).setDuration(200);
             topShadow.animate().alpha(0).setDuration(200);
