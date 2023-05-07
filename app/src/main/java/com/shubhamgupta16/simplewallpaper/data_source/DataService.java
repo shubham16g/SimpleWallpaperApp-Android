@@ -7,15 +7,21 @@ import java.util.ArrayList;
 
 public interface DataService {
 
-    public ArrayList<CategoryPOJO> getCategories(String query);
+    enum QueryType {
+        NONE,
+        CATEGORY,
+        FAVORITE,
+        SEARCH
+    }
 
-//    private int getWallsInCategoryCount(String name);
-    public ArrayList<WallsPOJO> getWallpapers(int page, int type, String string);
+    ArrayList<CategoryPOJO> getCategories(String query);
 
-    public int getPagesCount(int type, String string);
+    ArrayList<WallsPOJO> getWallpapers(int page, DataService.QueryType type, String string);
 
-    public void toggleFavorite(int wallId, boolean favorite);
+    int getPagesCount(DataService.QueryType type, String string);
 
-    public boolean isFavorite(int id);
+    void toggleFavorite(WallsPOJO wallId, boolean favorite);
+
+    boolean isFavorite(int id);
 
 }

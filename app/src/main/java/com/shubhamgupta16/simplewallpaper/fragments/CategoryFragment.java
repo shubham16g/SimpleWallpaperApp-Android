@@ -10,10 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.adapters.CategoryAdapter;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class CategoryFragment extends Fragment {
     private View view;
     private ArrayList<CategoryPOJO> list;
     private CategoryAdapter adapter;
-    private SQLHelper sqlHelper;
+    private DataService dataService;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class CategoryFragment extends Fragment {
     }
 
     private void init() {
-        sqlHelper = new SQLHelper(getContext());
+        dataService = MainApplication.getDataService(requireActivity().getApplication());
         RecyclerView wallsRecycler = view.findViewById(R.id.recyclerView);
         wallsRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
         list = new ArrayList<>();
@@ -49,7 +50,7 @@ public class CategoryFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void setFragment(String query){
         list.clear();
-        list.addAll(sqlHelper.getCategories(query));
+        list.addAll(dataService.getCategories(query));
         adapter.notifyDataSetChanged();
     }
 

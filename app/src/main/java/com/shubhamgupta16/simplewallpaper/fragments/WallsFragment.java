@@ -25,8 +25,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
+import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.adapters.WallsAdapter;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -45,7 +46,7 @@ public class WallsFragment extends Fragment {
     private ArrayList<Integer> adPositionList;
     private ArrayList<NativeAd> nativeAdList;
     private WallsAdapter adapter;
-    private SQLHelper sqlHelper;
+    private DataService dataService;
     private boolean isScrollLoad = false;
     private int maxPage = 0, lastFetch = 0;
     private LinearLayout errorLayout;
@@ -62,7 +63,7 @@ public class WallsFragment extends Fragment {
 
     private void init() {
         Log.d("tagtag", "init");
-        sqlHelper = new SQLHelper(getContext());
+        dataService = MainApplication.getDataService(requireActivity().getApplication());
         list = new ArrayList<>();
         adPositionList = new ArrayList<>();
         nativeAdList = new ArrayList<>();
@@ -71,7 +72,7 @@ public class WallsFragment extends Fragment {
         final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
-        adapter = new WallsAdapter(getContext(), list, SQLHelper.QueryType.NONE);
+        adapter = new WallsAdapter(getContext(), dataService, list, DataService.QueryType.NONE);
         adapter.setOnRemoveFromFavSection(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -92,13 +93,12 @@ public class WallsFragment extends Fragment {
                 } else {
                     scrollOutItems = 0;
                 }
-
-                if (isScrollLoad && (currentItems + scrollOutItems == totalItems)) {
-                    maxPage = sqlHelper.getPagesCount(type, extras);
+                if (isScrollLoad && (currentItems + scrollOutItems >= totalItems)) {
+                    maxPage = dataService.getPagesCount(type, extras);
                     if (lastFetch < maxPage) {
                         isScrollLoad = false;
                         fetchWalls(lastFetch + 1);
-                        Log.d("tagtag", "scroll to bottom " + type);
+                        Log.d(TAG, "scroll to bottom " + type);
                     }
                 }
             }
@@ -139,11 +139,11 @@ public class WallsFragment extends Fragment {
         adLoader.loadAds(new AdRequest.Builder().build(), 2);
     }
 
-    private SQLHelper.QueryType type = SQLHelper.QueryType.NONE;
+    private DataService.QueryType type = DataService.QueryType.NONE;
     private String extras;
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFragment(SQLHelper.QueryType type, String extras) {
+    public void setFragment(DataService.QueryType type, String extras) {
         Log.d("tagtag", "set" + type);
         this.type = type;
         this.extras = extras;
@@ -152,7 +152,7 @@ public class WallsFragment extends Fragment {
         list.clear();
         adapter.setType(type);
         adapter.notifyDataSetChanged();
-        maxPage = sqlHelper.getPagesCount(type, extras);
+        maxPage = dataService.getPagesCount(type, extras);
         errorLayout.setVisibility(View.GONE);
         setErrorLayout();
         fetchWalls(1);
@@ -163,7 +163,7 @@ public class WallsFragment extends Fragment {
     private void setErrorLayout() {
         ImageView errorImage = errorLayout.findViewById(R.id.errorImage);
         TextView errorTitle = errorLayout.findViewById(R.id.errorTitle);
-        if (type == SQLHelper.QueryType.FAVORITE) {
+        if (type == DataService.QueryType.FAVORITE) {
             errorImage.setImageResource(R.drawable.no_fav);
             errorTitle.setText(R.string.no_fav);
         } else {
@@ -184,9 +184,9 @@ public class WallsFragment extends Fragment {
         Log.d("tagtag", "fetch page: " + page + "type" + type);
 
         if (page == 1) {
-            handleRes(page, sqlHelper.getWallpapers(page, type, extras));
+            handleRes(page, dataService.getWallpapers(page, type, extras));
         } else {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, dataService.getWallpapers(page, type, extras)), 1000);
         }
 
     }
@@ -229,8 +229,8 @@ public class WallsFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
-        maxPage = sqlHelper.getPagesCount(type, extras);
-        if (type == SQLHelper.QueryType.FAVORITE) {
+        maxPage = dataService.getPagesCount(type, extras);
+        if (type == DataService.QueryType.FAVORITE) {
             int size = list.size();
             adPositionList.clear();
             list.clear();

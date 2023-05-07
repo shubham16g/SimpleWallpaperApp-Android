@@ -20,7 +20,6 @@ import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -31,14 +30,14 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     private final Context context;
     private final List<WallsPOJO> list;
-    private final DataService sqlHelper;
-    private SQLHelper.QueryType type;
+    private final DataService dataService;
+    private DataService.QueryType type;
 
-    public WallsAdapter(Context context, List<WallsPOJO> list, SQLHelper.QueryType type) {
+    public WallsAdapter(Context context, DataService dataService, List<WallsPOJO> list, DataService.QueryType type) {
         this.context = context;
         this.list = list;
         this.type = type;
-        sqlHelper = new SQLHelper(context);
+        this.dataService = dataService;
     }
 
     @NonNull
@@ -99,15 +98,15 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
     }
 
     private void handleHeart(final int position, final int id, final ImageView heartImage) {
-        if (sqlHelper.isFavorite(id)) {
+        if (dataService.isFavorite(id)) {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         } else {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
         heartImage.setOnClickListener(view -> {
-            if (sqlHelper.isFavorite(id)) {
-                sqlHelper.toggleFavorite(id, false);
-                if (type == SQLHelper.QueryType.FAVORITE) {
+            if (dataService.isFavorite(id)) {
+                dataService.toggleFavorite(list.get(position), false);
+                if (type == DataService.QueryType.FAVORITE) {
                     list.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, list.size());
@@ -117,7 +116,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
                     heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                 }
             } else {
-                sqlHelper.toggleFavorite(id, true);
+                dataService.toggleFavorite(list.get(position), true);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
@@ -128,7 +127,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         return list.size();
     }
 
-    public void setType(SQLHelper.QueryType type) {
+    public void setType(DataService.QueryType type) {
         this.type = type;
     }
 

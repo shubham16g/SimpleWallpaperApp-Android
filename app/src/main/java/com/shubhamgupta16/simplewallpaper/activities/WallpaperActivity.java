@@ -51,9 +51,9 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import com.shubhamgupta16.simplewallpaper.Application;
+import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;
@@ -63,7 +63,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private static final String TAG = "WallpaperActivity";
 
     private Bitmap imageBitmap;
-    private SQLHelper sqlHelper;
+    private DataService dataService;
     private WallsPOJO pojo;
 
     //    Views
@@ -151,7 +151,7 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 
 //        init helpers and ads
-        sqlHelper = new SQLHelper(this);
+        dataService = MainApplication.getDataService(getApplication());
         initAd();
         loadInterstitial();
 
@@ -264,7 +264,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private void setupBottomNav() {
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
-        if (sqlHelper.isFavorite(pojo.getId()))
+        if (dataService.isFavorite(pojo.getId()))
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
@@ -292,11 +292,11 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 //        favorite button click
         favoriteButton.setOnClickListener(view -> {
-            if (sqlHelper.isFavorite(pojo.getId())) {
-                sqlHelper.toggleFavorite(pojo.getId(), false);
+            if (dataService.isFavorite(pojo.getId())) {
+                dataService.toggleFavorite(pojo, false);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
             } else {
-                sqlHelper.toggleFavorite(pojo.getId(), true);
+                dataService.toggleFavorite(pojo, true);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
@@ -384,11 +384,12 @@ public class WallpaperActivity extends AppCompatActivity {
     @Override
     public void finish() {
         Log.d(TAG, "finish: called -> " + (mInterstitialAd != null));
-        if (!(getApplication() instanceof Application)){
+        if (!(getApplication() instanceof MainApplication)){
             super.finish();
         }
-        final Application application = (Application) getApplication();
-        if (mInterstitialAd != null && !isInterstitialApplyShown && !isInterstitialSaveShown && application.canShowInterstitial()) {
+        final MainApplication mainApplication = (MainApplication) getApplication();
+
+        if (mInterstitialAd != null && !isInterstitialApplyShown && !isInterstitialSaveShown && mainApplication.canShowInterstitial()) {
             mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
@@ -407,7 +408,7 @@ public class WallpaperActivity extends AppCompatActivity {
                 @Override
                 public void onAdShowedFullScreenContent() {
                     super.onAdShowedFullScreenContent();
-                    application.interstitialShown();
+                    mainApplication.interstitialShown();
                 }
             });
             mInterstitialAd.show(this);
@@ -516,7 +517,7 @@ public class WallpaperActivity extends AppCompatActivity {
         bannerAdView.destroy();
         Intent i = new Intent();
         i.putExtra("id", pojo.getId());
-        i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));
+        i.putExtra("fav", dataService.isFavorite(pojo.getId()));
         setResult(RESULT_OK, i);
         super.onDestroy();
     }

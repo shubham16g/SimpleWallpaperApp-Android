@@ -7,16 +7,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class SQLHelper extends SQLiteOpenHelper implements DataService {
+public class SQLHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "myWalls3";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
@@ -25,8 +23,7 @@ public class SQLHelper extends SQLiteOpenHelper implements DataService {
     public enum QueryType {
         NONE,
         CATEGORY,
-        FAVORITE,
-        QUERY
+        SEARCH
     }
 
     public SQLHelper(@Nullable Context context) {
@@ -102,26 +99,6 @@ public class SQLHelper extends SQLiteOpenHelper implements DataService {
         return list;
     }
 
-    @Override
-    public ArrayList<WallsPOJO> getWallpapers(int page, int type, String string) {
-        return null;
-    }
-
-    @Override
-    public int getPagesCount(int type, String string) {
-        return 0;
-    }
-
-    @Override
-    public void toggleFavorite(int wallId, boolean favorite) {
-
-    }
-
-    @Override
-    public boolean isFavorite(int id) {
-        return false;
-    }
-
     private int getWallsInCategoryCount(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -133,6 +110,7 @@ public class SQLHelper extends SQLiteOpenHelper implements DataService {
         } else {
             res = 0;
         }
+        cursor.close();
         db.close();
         return res;
     }
@@ -152,7 +130,7 @@ public class SQLHelper extends SQLiteOpenHelper implements DataService {
             case CATEGORY:
                 if (string == null) return null;
                 return " WHERE categories LIKE '%" + string + "%'";
-            case QUERY:
+            case SEARCH:
                 if (string == null) return null;
                 return " WHERE (name LIKE '%" + string + "%' OR categories LIKE '%" + string + "%')";
             default:

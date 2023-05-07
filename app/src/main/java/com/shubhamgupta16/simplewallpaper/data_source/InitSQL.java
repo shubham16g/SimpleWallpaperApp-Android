@@ -1,8 +1,7 @@
-package com.shubhamgupta16.simplewallpaper.utils;
+package com.shubhamgupta16.simplewallpaper.data_source;
 
 import android.content.Context;
 
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 

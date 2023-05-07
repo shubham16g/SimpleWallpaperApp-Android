@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
 
 public class MoreWallsActivity extends AppCompatActivity {
@@ -36,7 +36,7 @@ public class MoreWallsActivity extends AppCompatActivity {
             String category = intent.getStringExtra("category");
             toolbar.setTitle(category);
             assert wallsFragment != null;
-            wallsFragment.setFragment(SQLHelper.TYPE_CATEGORY, category);
+            wallsFragment.setFragment(DataService.QueryType.CATEGORY, category);
         } else {
             finish();
         }

@@ -20,7 +20,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 import com.shubhamgupta16.simplewallpaper.fragments.CategoryFragment;
 import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
@@ -87,13 +87,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("tagtag", "search");
         switch (currentFragPos) {
             case 0:
-                wallsFragment.setFragment(SQLHelper.TYPE_QUERY, query);
+                wallsFragment.setFragment(DataService.QueryType.SEARCH, query);
                 break;
             case 1:
                 categoryFragment.setFragment(query);
                 break;
             case 2:
-                favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE_QUERY, query);
+                favoriteFragment.setFragment(DataService.QueryType.FAVORITE, query);
                 break;
         }
     }
@@ -102,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("tagtag", "closeSearch");
         switch (currentFragPos) {
             case 0:
-                wallsFragment.setFragment(SQLHelper.TYPE_NONE, "");
+                wallsFragment.setFragment(DataService.QueryType.NONE, "");
                 break;
             case 1:
                 categoryFragment.setFragment(null);
                 break;
             case 2:
-                favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE, "");
+                favoriteFragment.setFragment(DataService.QueryType.FAVORITE, "");
                 break;
         }
     }
@@ -183,8 +183,8 @@ public class MainActivity extends AppCompatActivity {
         categoryFragment = (CategoryFragment) manager.findFragmentById(R.id.categoryFragment);
         favoriteFragment = (WallsFragment) manager.findFragmentById(R.id.favoriteFragment);
         assert favoriteFragment != null;
-        favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE, null);
-        wallsFragment.setFragment(SQLHelper.TYPE_NONE, null);
+        favoriteFragment.setFragment(DataService.QueryType.FAVORITE, null);
+        wallsFragment.setFragment(DataService.QueryType.NONE, null);
         categoryFragment.setFragment(null);
 
         BottomNavigationView bNav = findViewById(R.id.bottomNav);
