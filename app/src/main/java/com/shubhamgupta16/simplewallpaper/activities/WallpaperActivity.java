@@ -2,7 +2,6 @@ package com.shubhamgupta16.simplewallpaper.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,10 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,6 +51,7 @@ import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.ApplyWallpaper;
+import com.shubhamgupta16.simplewallpaper.utils.FastBlur;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 import java.util.concurrent.ExecutorService;
@@ -70,6 +66,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private WallsPOJO pojo;
 
     //    Views
+    private ImageView thumbView;
     private PhotoView photoView;
     private Toolbar toolbar;
     private ProgressBar progressBar;
@@ -130,6 +127,7 @@ public class WallpaperActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.full_view_toolbar);
         topShadow = findViewById(R.id.top_shadow);
         bottomShadow = findViewById(R.id.bottom_shadow);
+        thumbView = findViewById(R.id.thumbView);
         photoView = findViewById(R.id.photo_view);
         progressBar = findViewById(R.id.full_progressbar);
         bottomNavLayout = findViewById(R.id.bottomButtonNav);
@@ -165,15 +163,13 @@ public class WallpaperActivity extends AppCompatActivity {
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
         }
         photoView.setOnPhotoTapListener((view, x, y) -> toggleTouch());
-        photoView.setTag(false);
+        photoView.setZoomable(false);
 
 //        load blur image into photoView
         Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                if (photoView.getTag().equals(false)) {
-                    photoView.setImageBitmap(fastBlur(WallpaperActivity.this, resource));
-                }
+                    thumbView.setImageBitmap(FastBlur.apply(resource, 1, 18));
             }
 
             @Override
@@ -192,21 +188,12 @@ public class WallpaperActivity extends AppCompatActivity {
 
             @Override
             public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                imageBitmap = resource;
+                photoView.setZoomable(true);
+                progressBar.setVisibility(View.GONE);
                 return false;
             }
-        }).into(new CustomTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                imageBitmap = resource;
-                photoView.setImageBitmap(imageBitmap);
-                photoView.setTag(true);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onLoadCleared(@Nullable Drawable placeholder) {
-            }
-        });
+        }).into(photoView);
     }
 
     private void initAd() {
@@ -321,21 +308,6 @@ public class WallpaperActivity extends AppCompatActivity {
             saveImage();
         }
     }
-
-    //    apply blur on bitmap
-    private static Bitmap fastBlur(Context context, Bitmap source) {
-        Bitmap bitmap = source.copy(source.getConfig(), true);
-        RenderScript rs = RenderScript.create(context);
-        Allocation input = Allocation.createFromBitmap(rs, source, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
-        Allocation output = Allocation.createTyped(rs, input.getType());
-        ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-        script.setRadius(18);
-        script.setInput(input);
-        script.forEach(output);
-        output.copyTo(bitmap);
-        return bitmap;
-    }
-
     private void saveImage() {
         if (imageBitmap == null || pojo == null) return;
         Log.d("TAG", "saveImage: called");

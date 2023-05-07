@@ -20,6 +20,7 @@
     <string name="lock_screen">Lock Screen</string>
     <string name="both">Both</string>
     <string name="set_wallpaper_on">Set Wallpaper on</string>
+    <string name="thumbnail">Thumbnail</string>
     <plurals name="wallpaper_s">
         <item quantity="one">%d Wallpaper</item>
         <item quantity="other">%d Wallpapers</item>
