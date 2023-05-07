@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
@@ -50,6 +49,7 @@ public class WallsFragment extends Fragment {
     private boolean isScrollLoad = false;
     private int maxPage = 0, lastFetch = 0;
     private LinearLayout errorLayout;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -68,6 +68,7 @@ public class WallsFragment extends Fragment {
         adPositionList = new ArrayList<>();
         nativeAdList = new ArrayList<>();
         errorLayout = view.findViewById(R.id.errorLayout);
+        progressBar = view.findViewById(R.id.progressBar);
         RecyclerView wallsRecycler = view.findViewById(R.id.recyclerView);
         final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
@@ -94,7 +95,7 @@ public class WallsFragment extends Fragment {
                     scrollOutItems = 0;
                 }
                 if (isScrollLoad && (currentItems + scrollOutItems >= totalItems)) {
-                    maxPage = dataService.getPagesCount(type, extras);
+                    dataService.getPagesCount(type, extras, count -> maxPage = count);
                     if (lastFetch < maxPage) {
                         isScrollLoad = false;
                         fetchWalls(lastFetch + 1);
@@ -152,7 +153,7 @@ public class WallsFragment extends Fragment {
         list.clear();
         adapter.setType(type);
         adapter.notifyDataSetChanged();
-        maxPage = dataService.getPagesCount(type, extras);
+        dataService.getPagesCount(type, extras, count -> maxPage = count);
         errorLayout.setVisibility(View.GONE);
         setErrorLayout();
         fetchWalls(1);
@@ -182,12 +183,10 @@ public class WallsFragment extends Fragment {
 
     private void fetchWalls(final int page) {
         Log.d("tagtag", "fetch page: " + page + "type" + type);
-
         if (page == 1) {
-            handleRes(page, dataService.getWallpapers(page, type, extras));
-        } else {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, dataService.getWallpapers(page, type, extras)), 1000);
+            progressBar.setVisibility(View.VISIBLE);
         }
+        dataService.getWallpapers(page, type, extras, wallpapers -> handleRes(page, wallpapers));
 
     }
 
@@ -202,6 +201,8 @@ public class WallsFragment extends Fragment {
                 list.remove(list.size() - 1);
                 adapter.notifyItemRemoved(list.size());
             }
+        } else {
+            progressBar.setVisibility(View.GONE);
         }
         int from = list.size();
         list.addAll(walls);
@@ -214,8 +215,8 @@ public class WallsFragment extends Fragment {
                 int adPos = (adPositionList.size() - 1) % nativeAdList.size();
                 list.add(new WallsPOJO(nativeAdList.get(adPos)));
             }
-            list.add(new WallsPOJO());
-            list.add(new WallsPOJO());
+            list.add(new WallsPOJO(false));
+            list.add(new WallsPOJO(false));
         }
 
         adapter.notifyItemRangeInserted(from, list.size());
@@ -229,7 +230,7 @@ public class WallsFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
-        maxPage = dataService.getPagesCount(type, extras);
+        dataService.getPagesCount(type, extras, count -> maxPage = count);
         if (type == DataService.QueryType.FAVORITE) {
             int size = list.size();
             adPositionList.clear();

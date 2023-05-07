@@ -1,5 +1,8 @@
 package com.shubhamgupta16.simplewallpaper.data_source;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
@@ -22,33 +25,46 @@ public class SQLDataServiceImpl implements DataService {
     }
 
     @Override
-    public ArrayList<WallsPOJO> getWallpapers(int page, DataService.QueryType type, String string) {
-        switch (type) {
-            case NONE:
-            default:
-                return sqlHelper.getWallpapers(page, SQLHelper.QueryType.NONE, string);
-            case CATEGORY:
-                return sqlHelper.getWallpapers(page, SQLHelper.QueryType.CATEGORY, string);
-            case SEARCH:
-                return sqlHelper.getWallpapers(page, SQLHelper.QueryType.SEARCH, string);
-            case FAVORITE:
-                return sqlFav.getWallpapers(page);
-        }
+    public void getWallpapers(int page, DataService.QueryType type, String string, OnWallpapersLoaded onWallpapersLoaded) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            switch (type) {
+                case NONE:
+                default:
+                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.NONE, string));
+                    break;
+                case CATEGORY:
+                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.CATEGORY, string));
+                    break;
+                case SEARCH:
+                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.SEARCH, string));
+                    break;
+                case FAVORITE:
+                    onWallpapersLoaded.onWallpapersLoaded(sqlFav.getWallpapers(page));
+                    break;
+            }
+        }, type == QueryType.FAVORITE ? 200 : 800);
+
     }
 
     @Override
-    public int getPagesCount(DataService.QueryType type, String string) {
-        switch (type) {
-            case NONE:
-            default:
-                return sqlHelper.getPagesCount(SQLHelper.QueryType.NONE, string);
-            case CATEGORY:
-                return sqlHelper.getPagesCount(SQLHelper.QueryType.CATEGORY, string);
-            case SEARCH:
-                return sqlHelper.getPagesCount(SQLHelper.QueryType.SEARCH, string);
-            case FAVORITE:
-                return sqlFav.getPagesCount();
-        }
+    public void getPagesCount(DataService.QueryType type, String string, OnPagesCountLoaded onPagesCountLoaded) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            switch (type) {
+                case NONE:
+                default:
+                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.NONE, string));
+                    break;
+                case CATEGORY:
+                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.CATEGORY, string));
+                    break;
+                case SEARCH:
+                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.SEARCH, string));
+                    break;
+                case FAVORITE:
+                    onPagesCountLoaded.onPagesCountLoaded(sqlFav.getPagesCount());
+                    break;
+            }
+        }, type == QueryType.FAVORITE ? 200 : 800);
     }
 
     @Override

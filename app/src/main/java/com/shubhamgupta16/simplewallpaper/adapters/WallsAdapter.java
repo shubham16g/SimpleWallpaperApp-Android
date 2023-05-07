@@ -50,6 +50,9 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
         else if (viewType == 2)
             view = inflater.inflate(R.layout.ad_layout, parent, false);
+
+        else if (viewType == 3)
+            view = inflater.inflate(R.layout.loading_layout_full, parent, false);
         else
             view = inflater.inflate(R.layout.loading_layout, parent, false);
         return new ViewHolder(view, viewType);
@@ -61,6 +64,8 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             return 0;
         else if (list.get(position).getId() == -2)
             return 2;
+        else if (list.get(position).getId() == -3)
+            return 3;
         else return 1;
 
     }
@@ -69,7 +74,8 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         WallsPOJO pojo = list.get(position);
 
-        if (getItemViewType(position) == 0)
+        if (getItemViewType(position) == 0 || getItemViewType(position) == 3)
+
             return;
         if (getItemViewType(position) == 2) {
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();

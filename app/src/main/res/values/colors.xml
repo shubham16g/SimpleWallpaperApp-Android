@@ -11,5 +11,6 @@
     <color name="colorDialogBackground">#EEF1F3</color>
     <color name="colorWhite">#fff</color>
     <color name="colorDullWhite">#eee</color>
+    <color name="colorShimmer">#1E5F6A71</color>
     <color name="colorTextSecondary">#555</color>
 </resources>

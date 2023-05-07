@@ -55,8 +55,11 @@ import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.R;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.utils.ApplyWallpaper;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
-import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WallpaperActivity extends AppCompatActivity {
 
@@ -442,16 +445,22 @@ public class WallpaperActivity extends AppCompatActivity {
 
     private void applyWallpaper(int where) {
         processStart(getString(R.string.success_applied));
-        WallpaperSetter.apply(this, imageBitmap, where, b -> {
-            if (b) {
-                if (isInterstitialApplyShown)
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            final boolean b = ApplyWallpaper.fromBitmap(this, imageBitmap, where);
+            handler.post(() -> {
+                if (b) {
+                    if (isInterstitialApplyShown)
+                        processStopIfDone();
+                    else
+                        showInterstitial(false);
+                } else {
+                    message = "Failed to apply wallpaper";
                     processStopIfDone();
-                else
-                    showInterstitial(false);
-            } else {
-                message = "Failed to apply wallpaper";
-                processStopIfDone();
-            }
+                }
+            });
         });
     }
 

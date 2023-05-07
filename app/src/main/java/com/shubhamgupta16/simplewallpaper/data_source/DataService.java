@@ -16,12 +16,20 @@ public interface DataService {
 
     ArrayList<CategoryPOJO> getCategories(String query);
 
-    ArrayList<WallsPOJO> getWallpapers(int page, DataService.QueryType type, String string);
+    void getWallpapers(int page, DataService.QueryType type, String string, OnWallpapersLoaded onWallpapersLoaded);
 
-    int getPagesCount(DataService.QueryType type, String string);
+    void getPagesCount(DataService.QueryType type, String string, OnPagesCountLoaded onPagesCountLoaded);
 
     void toggleFavorite(WallsPOJO wallId, boolean favorite);
 
     boolean isFavorite(int id);
+
+    interface OnWallpapersLoaded {
+        void onWallpapersLoaded(ArrayList<WallsPOJO> list);
+    }
+
+    interface OnPagesCountLoaded {
+        void onPagesCountLoaded(int count);
+    }
 
 }

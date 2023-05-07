@@ -29,8 +29,8 @@ public class WallsPOJO implements Serializable {
         this.premium = false;
         this.nativeAd = nativeAd;
     }
-    public WallsPOJO(){
-        id = -1;
+    public WallsPOJO(boolean fullSize){
+        id = fullSize ? -3 : -1;
         this.name = null;
         this.previewUrl = null;
         this.url = null;
