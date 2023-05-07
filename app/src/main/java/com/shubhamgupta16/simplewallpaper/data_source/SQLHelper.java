@@ -1,4 +1,4 @@
-package com.shubhamgupta16.simplewallpaper.utils;
+package com.shubhamgupta16.simplewallpaper.data_source;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -7,25 +7,27 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class SQLHelper extends SQLiteOpenHelper {
-    public static final String DB_NAME = "myWalls2";
+public class SQLHelper extends SQLiteOpenHelper implements DataService {
+    public static final String DB_NAME = "myWalls3";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
     private static final int PER_PAGE_ITEM = 16;
 
-    public static final int TYPE_NONE = 0;
-    public static final int TYPE_CATEGORY = 1;
-    public static final int TYPE_FAVORITE = 2;
-    public static final int TYPE_QUERY = 3;
-    public static final int TYPE_FAVORITE_QUERY = 4;
-
+    public enum QueryType {
+        NONE,
+        CATEGORY,
+        FAVORITE,
+        QUERY
+    }
 
     public SQLHelper(@Nullable Context context) {
         super(context, DB_NAME, null, 1);
@@ -33,7 +35,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, favorite INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER);");
         db.execSQL("CREATE TABLE IF NOT EXISTS " + CATEGORIES + "(name VARCHAR PRIMARY KEY, preview1 VARCHAR, preview2 VARCHAR, preview3 VARCHAR);");
     }
 
@@ -71,13 +73,6 @@ public class SQLHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void toggleFavorite(int id, boolean favorite) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("favorite", favorite ? 1 : 0);
-        db.update(WALLPAPERS, contentValues, "id=" + id, null);
-    }
-
     private boolean checkAvailableWallpaper(String url) {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT url FROM " + WALLPAPERS + " WHERE url='" + url + "'", null);
@@ -107,51 +102,62 @@ public class SQLHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    @SuppressLint("Recycle")
+    @Override
+    public ArrayList<WallsPOJO> getWallpapers(int page, int type, String string) {
+        return null;
+    }
+
+    @Override
+    public int getPagesCount(int type, String string) {
+        return 0;
+    }
+
+    @Override
+    public void toggleFavorite(int wallId, boolean favorite) {
+
+    }
+
+    @Override
+    public boolean isFavorite(int id) {
+        return false;
+    }
+
     private int getWallsInCategoryCount(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor;
         cursor = db.rawQuery("SELECT count(*) FROM " + WALLPAPERS + " WHERE categories LIKE '%" + name + "%'", null);
+        int res;
         if (cursor.moveToNext()) {
-            return cursor.getInt(0);
+            res = cursor.getInt(0);
         } else {
-            return 0;
+            res = 0;
         }
+        db.close();
+        return res;
     }
 
 
-    public ArrayList<WallsPOJO> getWallpapers(int page, int type, String string) {
-
-        return getListByPages(page, getQueryFromType(type, string));
+    public ArrayList<WallsPOJO> getWallpapers(int page, QueryType type, String string) {
+        return getListByPages(page, getWhereStatement(type, string));
     }
 
-    public int getPagesCount(int type, String string) {
-        return getPagesCount(getQueryFromType(type, string));
+    public int getPagesCount(QueryType type, String string) {
+        return getPagesCount(getWhereStatement(type, string));
     }
 
-    private String getQueryFromType(int type, String string) {
-        String pagesCountQuery;
+
+    private String getWhereStatement(QueryType type, String string) {
         switch (type) {
-            case TYPE_FAVORITE:
-                pagesCountQuery = " WHERE favorite=1";
-                break;
-            case TYPE_CATEGORY:
+            case CATEGORY:
                 if (string == null) return null;
-                pagesCountQuery = " WHERE categories LIKE '%" + string + "%'";
-                break;
-            case TYPE_QUERY:
+                return " WHERE categories LIKE '%" + string + "%'";
+            case QUERY:
                 if (string == null) return null;
-                pagesCountQuery = " WHERE name LIKE '%" + string + "%' OR categories LIKE '%" + string + "%'";
-                break;
-            case TYPE_FAVORITE_QUERY:
-                if (string == null) return null;
-                pagesCountQuery = " WHERE name LIKE '%" + string + "%' AND favorite=1";
-                break;
+                return " WHERE (name LIKE '%" + string + "%' OR categories LIKE '%" + string + "%')";
             default:
-                pagesCountQuery = "";
+                return "";
         }
-        return pagesCountQuery;
     }
 
     private ArrayList<WallsPOJO> getListByPages(int page, String extras) {
@@ -174,12 +180,4 @@ public class SQLHelper extends SQLiteOpenHelper {
         } else return 0;
     }
 
-    public boolean isFavorite(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT favorite FROM " + WALLPAPERS + " WHERE id=" + id, null);
-        if (c.moveToFirst()) {
-            return c.getInt(0) != 0;
-        }
-        return false;
-    }
 }

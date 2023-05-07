@@ -53,7 +53,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.shubhamgupta16.simplewallpaper.Application;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;

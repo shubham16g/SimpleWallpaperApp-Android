@@ -2,6 +2,7 @@ package com.shubhamgupta16.simplewallpaper.utils;
 
 import android.content.Context;
 
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 

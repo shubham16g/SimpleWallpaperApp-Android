@@ -15,7 +15,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
 import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 

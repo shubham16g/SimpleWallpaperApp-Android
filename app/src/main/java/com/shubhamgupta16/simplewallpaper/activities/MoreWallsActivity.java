@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
 
 public class MoreWallsActivity extends AppCompatActivity {

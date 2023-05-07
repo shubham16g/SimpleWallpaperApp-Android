@@ -26,7 +26,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.adapters.WallsAdapter;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -71,7 +71,7 @@ public class WallsFragment extends Fragment {
         final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
-        adapter = new WallsAdapter(getContext(), list, SQLHelper.TYPE_NONE);
+        adapter = new WallsAdapter(getContext(), list, SQLHelper.QueryType.NONE);
         adapter.setOnRemoveFromFavSection(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -139,11 +139,11 @@ public class WallsFragment extends Fragment {
         adLoader.loadAds(new AdRequest.Builder().build(), 2);
     }
 
-    private int type = SQLHelper.TYPE_NONE;
+    private SQLHelper.QueryType type = SQLHelper.QueryType.NONE;
     private String extras;
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFragment(int type, String extras) {
+    public void setFragment(SQLHelper.QueryType type, String extras) {
         Log.d("tagtag", "set" + type);
         this.type = type;
         this.extras = extras;
@@ -163,7 +163,7 @@ public class WallsFragment extends Fragment {
     private void setErrorLayout() {
         ImageView errorImage = errorLayout.findViewById(R.id.errorImage);
         TextView errorTitle = errorLayout.findViewById(R.id.errorTitle);
-        if (type == SQLHelper.TYPE_FAVORITE || type == SQLHelper.TYPE_FAVORITE_QUERY) {
+        if (type == SQLHelper.QueryType.FAVORITE) {
             errorImage.setImageResource(R.drawable.no_fav);
             errorTitle.setText(R.string.no_fav);
         } else {
@@ -230,7 +230,7 @@ public class WallsFragment extends Fragment {
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
         maxPage = sqlHelper.getPagesCount(type, extras);
-        if (type == SQLHelper.TYPE_FAVORITE) {
+        if (type == SQLHelper.QueryType.FAVORITE) {
             int size = list.size();
             adPositionList.clear();
             list.clear();

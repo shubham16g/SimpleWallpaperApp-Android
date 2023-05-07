@@ -19,7 +19,8 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.activities.WallpaperActivity;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -30,10 +31,10 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     private final Context context;
     private final List<WallsPOJO> list;
-    private final SQLHelper sqlHelper;
-    private int type;
+    private final DataService sqlHelper;
+    private SQLHelper.QueryType type;
 
-    public WallsAdapter(Context context, List<WallsPOJO> list, int type) {
+    public WallsAdapter(Context context, List<WallsPOJO> list, SQLHelper.QueryType type) {
         this.context = context;
         this.list = list;
         this.type = type;
@@ -106,7 +107,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         heartImage.setOnClickListener(view -> {
             if (sqlHelper.isFavorite(id)) {
                 sqlHelper.toggleFavorite(id, false);
-                if (type == SQLHelper.TYPE_FAVORITE) {
+                if (type == SQLHelper.QueryType.FAVORITE) {
                     list.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, list.size());
@@ -127,7 +128,7 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
         return list.size();
     }
 
-    public void setType(int type) {
+    public void setType(SQLHelper.QueryType type) {
         this.type = type;
     }
 

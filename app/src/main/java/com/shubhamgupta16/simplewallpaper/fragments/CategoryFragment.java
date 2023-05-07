@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.shubhamgupta16.simplewallpaper.adapters.CategoryAdapter;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 
 import java.util.ArrayList;
 

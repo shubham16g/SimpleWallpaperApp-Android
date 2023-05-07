@@ -20,7 +20,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLHelper;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 import com.shubhamgupta16.simplewallpaper.fragments.CategoryFragment;
 import com.shubhamgupta16.simplewallpaper.fragments.WallsFragment;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 categoryFragment.setFragment(query);
                 break;
             case 2:
-                favoriteFragment.setFragment(SQLHelper.TYPE_FAVORITE_QUERY, query);
+                favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE_QUERY, query);
                 break;
         }
     }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 categoryFragment.setFragment(null);
                 break;
             case 2:
-                favoriteFragment.setFragment(SQLHelper.TYPE_FAVORITE, "");
+                favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE, "");
                 break;
         }
     }
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         categoryFragment = (CategoryFragment) manager.findFragmentById(R.id.categoryFragment);
         favoriteFragment = (WallsFragment) manager.findFragmentById(R.id.favoriteFragment);
         assert favoriteFragment != null;
-        favoriteFragment.setFragment(SQLHelper.TYPE_FAVORITE, null);
+        favoriteFragment.setFragment(SQLHelper.QueryType.FAVORITE, null);
         wallsFragment.setFragment(SQLHelper.TYPE_NONE, null);
         categoryFragment.setFragment(null);
 
