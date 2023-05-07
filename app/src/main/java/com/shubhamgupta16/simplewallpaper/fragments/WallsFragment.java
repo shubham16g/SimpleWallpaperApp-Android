@@ -92,19 +92,19 @@ public class WallsFragment extends Fragment {
                 } else {
                     scrollOutItems = 0;
                 }
-
-                if (isScrollLoad && (currentItems + scrollOutItems == totalItems)) {
+                if (isScrollLoad && (currentItems + scrollOutItems >= totalItems)) {
                     maxPage = sqlHelper.getPagesCount(type, extras);
                     if (lastFetch < maxPage) {
                         isScrollLoad = false;
                         fetchWalls(lastFetch + 1);
-                        Log.d("tagtag", "scroll to bottom " + type);
+                        Log.d(TAG, "scroll to bottom " + type);
                     }
                 }
             }
         });
     }
 
+    @SuppressLint("VisibleForTests")
     private void loadNativeAds() {
         AdLoader adLoader = new AdLoader.Builder(requireContext(), getString(R.string.native_ad_id))
                 .forNativeAd(nativeAd -> {
