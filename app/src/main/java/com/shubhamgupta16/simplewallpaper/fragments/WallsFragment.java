@@ -184,6 +184,7 @@ public class WallsFragment extends Fragment {
     private void fetchWalls(final int page) {
         Log.d("tagtag", "fetch page: " + page + "type" + type);
         if (page == 1) {
+            errorLayout.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         }
         dataService.getWallpapers(page, type, extras, wallpapers -> handleRes(page, wallpapers));

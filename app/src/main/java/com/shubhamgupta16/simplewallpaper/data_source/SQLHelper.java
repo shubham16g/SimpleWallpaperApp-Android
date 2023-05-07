@@ -15,7 +15,7 @@ import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import java.util.ArrayList;
 
 public class SQLHelper extends SQLiteOpenHelper {
-    public static final String DB_NAME = "myWalls3";
+    public static final String DB_NAME = "itsWallpapers";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
     private static final int PER_PAGE_ITEM = 16;
@@ -32,7 +32,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, color VARCHAR, colorCode VARCHAR);");
         db.execSQL("CREATE TABLE IF NOT EXISTS " + CATEGORIES + "(name VARCHAR PRIMARY KEY, preview1 VARCHAR, preview2 VARCHAR, preview3 VARCHAR);");
     }
 

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class SQLFav extends SQLiteOpenHelper {
     private static final String FAVORITES = "favs";
-    private static final String DB_NAME = "fav012";
+    private static final String DB_NAME = "fav00";
 
     private static final int PER_PAGE_ITEM = 16;
 
@@ -26,7 +26,7 @@ public class SQLFav extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + FAVORITES + "(id INTEGER PRIMARY KEY, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + FAVORITES + "(id INTEGER PRIMARY KEY, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, color VARCHAR, colorCode VARCHAR);");
     }
 
     @Override
