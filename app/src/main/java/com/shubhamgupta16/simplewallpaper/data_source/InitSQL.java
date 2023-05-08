@@ -34,6 +34,7 @@ public class InitSQL {
             sqlHelper.clearAll();
             setupCategories();
             setupWallpapers();
+            PreserveOldFav.apply(context, sqlFav);
             filterFavorites(sqlFav);
             prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
         }

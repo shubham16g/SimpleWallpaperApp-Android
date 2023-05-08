@@ -15,7 +15,7 @@ import java.util.List;
 
 public class SQLFav extends SQLiteOpenHelper {
     private static final String FAVORITES = "favs";
-    private static final String DB_NAME = "fav000";
+    private static final String DB_NAME = "00Fav";
 
     private static final int PER_PAGE_ITEM = 16;
 
@@ -30,9 +30,7 @@ public class SQLFav extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
     public List<WallsPOJO> getAllWallpapers() {
         SQLiteDatabase db = getWritableDatabase();
