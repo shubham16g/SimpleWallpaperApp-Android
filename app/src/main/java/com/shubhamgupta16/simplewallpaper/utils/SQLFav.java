@@ -15,7 +15,7 @@ import java.util.List;
 
 public class SQLFav extends SQLiteOpenHelper {
     private static final String FAVORITES = "favs";
-    private static final String DB_NAME = "00Fav";
+    private static final String DB_NAME = "000Fav";
 
     private static final int PER_PAGE_ITEM = 16;
 
