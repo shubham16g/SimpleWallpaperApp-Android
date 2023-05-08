@@ -11,17 +11,17 @@ import java.util.ArrayList;
 
 public class SQLDataServiceImpl implements DataService {
 
-    final SQLHelper sqlHelper;
+    final SQLWallpapers sqlWallpapers;
     final SQLFav sqlFav;
 
-    public SQLDataServiceImpl(SQLHelper sqlHelper, SQLFav sqlFav) {
-        this.sqlHelper = sqlHelper;
+    public SQLDataServiceImpl(SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
+        this.sqlWallpapers = sqlWallpapers;
         this.sqlFav = sqlFav;
     }
 
     @Override
     public ArrayList<CategoryPOJO> getCategories(String query) {
-        return sqlHelper.getCategories(query);
+        return sqlWallpapers.getCategories(query);
     }
 
     @Override
@@ -30,13 +30,13 @@ public class SQLDataServiceImpl implements DataService {
             switch (type) {
                 case NONE:
                 default:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.NONE, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.NONE, string));
                     break;
                 case CATEGORY:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.CATEGORY, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.CATEGORY, string));
                     break;
                 case SEARCH:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlHelper.getWallpapers(page, SQLHelper.QueryType.SEARCH, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.SEARCH, string));
                     break;
                 case FAVORITE:
                     onWallpapersLoaded.onWallpapersLoaded(sqlFav.getWallpapers(page));
@@ -52,13 +52,13 @@ public class SQLDataServiceImpl implements DataService {
             switch (type) {
                 case NONE:
                 default:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.NONE, string));
+                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.NONE, string));
                     break;
                 case CATEGORY:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.CATEGORY, string));
+                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.CATEGORY, string));
                     break;
                 case SEARCH:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlHelper.getPagesCount(SQLHelper.QueryType.SEARCH, string));
+                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.SEARCH, string));
                     break;
                 case FAVORITE:
                     onPagesCountLoaded.onPagesCountLoaded(sqlFav.getPagesCount());

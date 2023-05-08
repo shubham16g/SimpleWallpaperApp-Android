@@ -16,6 +16,8 @@ This is a simple demo wallpaper 🏞️ app which contains wallpaper links 🔗 
 - Build the project
 - Run on your device
 
+>> NOTE: If you are migrating from `v1.O` to `v2.0`, make sure that `DB_NAME` of `v1.0`'s `SQLHelper` is same as `v2.0`'s `PreserveOldFav` `DB_NAME`. Otherwise, your users will lose their favorites in new update.
+
 ## Screenshots
 <p float="left">
     <img src="https://user-images.githubusercontent.com/55009858/208885779-67e8e5c7-922c-44a7-ae6c-b82ba8016245.png" alt="Home" width="220">

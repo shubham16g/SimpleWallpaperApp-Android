@@ -20,18 +20,18 @@ import java.nio.charset.StandardCharsets;
 
 public class InitSQL {
     private final Context context;
-    private final SQLHelper sqlHelper;
+    private final SQLWallpapers sqlWallpapers;
 
-    public static void apply(Context context, SQLHelper sqlHelper, SQLFav sqlFav) {
-        new InitSQL(context, sqlHelper, sqlFav);
+    public static void apply(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
+        new InitSQL(context, sqlWallpapers, sqlFav);
     }
-    private InitSQL(Context context, SQLHelper sqlHelper, SQLFav sqlFav) {
+    private InitSQL(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
         this.context = context;
-        this.sqlHelper = sqlHelper;
+        this.sqlWallpapers = sqlWallpapers;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int version = prefs.getInt("version",0);
         if (version != BuildConfig.VERSION_CODE) {
-            sqlHelper.clearAll();
+            sqlWallpapers.clearAll();
             setupCategories();
             setupWallpapers();
             PreserveOldFav.apply(context, sqlFav);
@@ -42,7 +42,7 @@ public class InitSQL {
 
     public void filterFavorites(SQLFav fav) {
         for (WallsPOJO pojo : fav.getAllWallpapers()) {
-            if (!sqlHelper.isExist(pojo.getUrl())) {
+            if (!sqlWallpapers.isExist(pojo.getUrl())) {
                 fav.toggleFavorite(pojo, false);
             }
         }
@@ -59,7 +59,7 @@ public class InitSQL {
                         object.getString("preview2"),
                         object.getString("preview3"),
                         0);
-                sqlHelper.insertCategory(pojo);
+                sqlWallpapers.insertCategory(pojo);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -78,7 +78,7 @@ public class InitSQL {
                         object.getString("categories"),
                         object.optBoolean("premium", false)
                 );
-                sqlHelper.insertWallpaper(pojo);
+                sqlWallpapers.insertWallpaper(pojo);
             }
         } catch (JSONException e) {
             e.printStackTrace();
