@@ -1,41 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.WallsFragment">
 
-   <androidx.recyclerview.widget.RecyclerView
-       android:id="@+id/recyclerView"
-       android:padding="5dp"
-       android:clipToPadding="false"
-       android:scrollbarStyle="outsideOverlay"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="5dp"
+        android:scrollbarStyle="outsideOverlay" />
 
-   <LinearLayout
-       android:visibility="gone"
-       android:id="@+id/errorLayout"
-      android:background="@color/colorBackground"
-       android:layout_width="match_parent"
-       android:gravity="center"
-       android:orientation="vertical"
-       android:layout_height="match_parent">
-      <ImageView
-          android:id="@+id/errorImage"
-          app:tint="@color/colorTextPrimary"
-          android:src="@drawable/no_fav"
-          android:layout_width="100dp"
-          android:layout_height="100dp"
-          android:contentDescription="@string/button_icon" />
-      <TextView
-          android:id="@+id/errorTitle"
-          android:textSize="18sp"
-          android:textColor="@color/colorTextPrimary"
-          android:layout_marginTop="20dp"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"/>
-   </LinearLayout>
+    <LinearLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/errorImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/button_icon"
+            android:src="@drawable/no_fav"
+            app:tint="@color/colorTextPrimary" />
+
+        <TextView
+            android:id="@+id/errorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
 </FrameLayout>

@@ -1,6 +1,7 @@
 package com.shubhamgupta16.simplewallpaper;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +14,16 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
-import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.InitSQL;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLWallpapers;
+import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 
-public class Application extends android.app.Application
+public class MainApplication extends android.app.Application
         implements ActivityLifecycleCallbacks, DefaultLifecycleObserver {
 
     private AppOpenAdManager appOpenAdManager;
@@ -29,6 +33,11 @@ public class Application extends android.app.Application
 
     private int interstitialAfterClicks;
     private int cardClicks;
+    private DataService dataService;
+
+    public static DataService getDataService(Application application) {
+        return ((MainApplication) application).dataService;
+    }
     public void interstitialShown(){
         Log.d(TAG, "interstitialShown: called");
         cardClicks = 0;
@@ -48,10 +57,10 @@ public class Application extends android.app.Application
         cardClicks = interstitialAfterClicks - 2;
         Utils.initTheme(this);
 
-        InitSQL initSQL = new InitSQL(this, new SQLHelper(this));
-
-        initSQL.setupCategories();
-        initSQL.setupWallpapers();
+        SQLWallpapers sqlWallpapers = new SQLWallpapers(this);
+        SQLFav sqlFav = new SQLFav(this);
+        dataService = new SQLDataServiceImpl(sqlWallpapers, sqlFav);
+        InitSQL.apply(this, sqlWallpapers, sqlFav);
 
 
         MobileAds.initialize(this, initializationStatus -> {

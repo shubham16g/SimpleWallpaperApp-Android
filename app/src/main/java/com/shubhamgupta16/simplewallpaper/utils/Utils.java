@@ -56,7 +56,6 @@ public class Utils {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean save(Context context, Bitmap bm, String appDir, String name) {
         Log.d("TAG", "save: called");
         OutputStream stream = null;
@@ -81,8 +80,9 @@ public class Utils {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || context.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 File imagesDir =
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/" + appDir);
-                if (!imagesDir.exists())
-                    imagesDir.mkdirs();
+                if (!imagesDir.exists()) {
+                    boolean b = imagesDir.mkdirs();
+                }
                 File image = new File(imagesDir, name + ".jpg");
                 try {
                     stream = new FileOutputStream(image);

@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
@@ -25,8 +24,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
+import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.adapters.WallsAdapter;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -45,10 +45,11 @@ public class WallsFragment extends Fragment {
     private ArrayList<Integer> adPositionList;
     private ArrayList<NativeAd> nativeAdList;
     private WallsAdapter adapter;
-    private SQLHelper sqlHelper;
+    private DataService dataService;
     private boolean isScrollLoad = false;
     private int maxPage = 0, lastFetch = 0;
     private LinearLayout errorLayout;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -62,16 +63,17 @@ public class WallsFragment extends Fragment {
 
     private void init() {
         Log.d("tagtag", "init");
-        sqlHelper = new SQLHelper(getContext());
+        dataService = MainApplication.getDataService(requireActivity().getApplication());
         list = new ArrayList<>();
         adPositionList = new ArrayList<>();
         nativeAdList = new ArrayList<>();
         errorLayout = view.findViewById(R.id.errorLayout);
+        progressBar = view.findViewById(R.id.progressBar);
         RecyclerView wallsRecycler = view.findViewById(R.id.recyclerView);
         final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 //        final GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         wallsRecycler.setLayoutManager(manager);
-        adapter = new WallsAdapter(getContext(), list, SQLHelper.TYPE_NONE);
+        adapter = new WallsAdapter(getContext(), dataService, list, DataService.QueryType.NONE);
         adapter.setOnRemoveFromFavSection(this::handleErrorLayout);
         wallsRecycler.setAdapter(adapter);
         wallsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -93,7 +95,7 @@ public class WallsFragment extends Fragment {
                     scrollOutItems = 0;
                 }
                 if (isScrollLoad && (currentItems + scrollOutItems >= totalItems)) {
-                    maxPage = sqlHelper.getPagesCount(type, extras);
+                    dataService.getPagesCount(type, extras, count -> maxPage = count);
                     if (lastFetch < maxPage) {
                         isScrollLoad = false;
                         fetchWalls(lastFetch + 1);
@@ -104,7 +106,6 @@ public class WallsFragment extends Fragment {
         });
     }
 
-    @SuppressLint("VisibleForTests")
     private void loadNativeAds() {
         AdLoader adLoader = new AdLoader.Builder(requireContext(), getString(R.string.native_ad_id))
                 .forNativeAd(nativeAd -> {
@@ -139,11 +140,11 @@ public class WallsFragment extends Fragment {
         adLoader.loadAds(new AdRequest.Builder().build(), 2);
     }
 
-    private int type = SQLHelper.TYPE_NONE;
+    private DataService.QueryType type = DataService.QueryType.NONE;
     private String extras;
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setFragment(int type, String extras) {
+    public void setFragment(DataService.QueryType type, String extras) {
         Log.d("tagtag", "set" + type);
         this.type = type;
         this.extras = extras;
@@ -152,7 +153,7 @@ public class WallsFragment extends Fragment {
         list.clear();
         adapter.setType(type);
         adapter.notifyDataSetChanged();
-        maxPage = sqlHelper.getPagesCount(type, extras);
+        dataService.getPagesCount(type, extras, count -> maxPage = count);
         errorLayout.setVisibility(View.GONE);
         setErrorLayout();
         fetchWalls(1);
@@ -163,7 +164,7 @@ public class WallsFragment extends Fragment {
     private void setErrorLayout() {
         ImageView errorImage = errorLayout.findViewById(R.id.errorImage);
         TextView errorTitle = errorLayout.findViewById(R.id.errorTitle);
-        if (type == SQLHelper.TYPE_FAVORITE || type == SQLHelper.TYPE_FAVORITE_QUERY) {
+        if (type == DataService.QueryType.FAVORITE) {
             errorImage.setImageResource(R.drawable.no_fav);
             errorTitle.setText(R.string.no_fav);
         } else {
@@ -182,12 +183,11 @@ public class WallsFragment extends Fragment {
 
     private void fetchWalls(final int page) {
         Log.d("tagtag", "fetch page: " + page + "type" + type);
-
         if (page == 1) {
-            handleRes(page, sqlHelper.getWallpapers(page, type, extras));
-        } else {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> handleRes(page, sqlHelper.getWallpapers(page, type, extras)), 1000);
+            errorLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
         }
+        dataService.getWallpapers(page, type, extras, wallpapers -> handleRes(page, wallpapers));
 
     }
 
@@ -195,13 +195,17 @@ public class WallsFragment extends Fragment {
         if (page != 1) {
             if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-                adapter.notifyItemRemoved(list.size());
             }
-
             if (list.size() >= 1) {
                 list.remove(list.size() - 1);
-                adapter.notifyItemRemoved(list.size());
             }
+        } else {
+            if (!list.isEmpty()) {
+                int size = list.size();
+                list.clear();
+                adapter.notifyItemRangeRemoved(0, size);
+            }
+            progressBar.setVisibility(View.GONE);
         }
         int from = list.size();
         list.addAll(walls);
@@ -214,11 +218,11 @@ public class WallsFragment extends Fragment {
                 int adPos = (adPositionList.size() - 1) % nativeAdList.size();
                 list.add(new WallsPOJO(nativeAdList.get(adPos)));
             }
-            list.add(new WallsPOJO());
-            list.add(new WallsPOJO());
+            list.add(new WallsPOJO(false));
+            list.add(new WallsPOJO(false));
         }
-
-        adapter.notifyItemRangeInserted(from, list.size());
+        adapter.notifyItemRangeChanged(from, 2);
+        adapter.notifyItemRangeInserted(from + 2, list.size());
 
         lastFetch = page;
         isScrollLoad = true;
@@ -229,14 +233,11 @@ public class WallsFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
-        maxPage = sqlHelper.getPagesCount(type, extras);
-        if (type == SQLHelper.TYPE_FAVORITE) {
-            int size = list.size();
+        dataService.getPagesCount(type, extras, count -> maxPage = count);
+        if (type == DataService.QueryType.FAVORITE) {
             adPositionList.clear();
             list.clear();
-            if (size > 0) {
-                adapter.notifyDataSetChanged();
-            }
+            adapter.notifyDataSetChanged();
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();

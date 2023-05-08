@@ -3,50 +3,22 @@ package com.shubhamgupta16.simplewallpaper.utils;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Build;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
-public class WallpaperSetter extends AsyncTask<Integer, Integer, Boolean> {
-
-    private final WeakReference<Context> contextRef;
-    private final Bitmap bitmap;
-
-    public WallpaperSetter(Context context, Bitmap bitmap) {
-        super();
-        this.contextRef = new WeakReference<>(context);
-        this.bitmap = bitmap;
-    }
-
-    private Context getContext() {
-        return contextRef.get();
-    }
-
-    public static void apply(Context context, Bitmap bitmap, int where, OnWallpaperApplied onWallpaperApplied){
-        new WallpaperSetter(context,bitmap){
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                super.onPostExecute(aBoolean);
-                if (onWallpaperApplied != null)
-                    onWallpaperApplied.onTaskCompleted(aBoolean);
-            }
-        }.execute(where);
-    }
-
-    @Override
-    protected Boolean doInBackground(Integer... integers) {
-        WallpaperManager manager = WallpaperManager.getInstance(getContext());
+public class ApplyWallpaper {
+    public static boolean fromBitmap(Context context, Bitmap bitmap, int where) {
+        WallpaperManager manager = WallpaperManager.getInstance(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (integers[0] == 1) {
+            if (where == 1) {
                 try {
                     manager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return false;
                 }
-            } else if (integers[0] == 2) {
+            } else if (where == 2) {
                 try {
                     manager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);//For Lock screen
                 } catch (IOException e) {
@@ -63,7 +35,7 @@ public class WallpaperSetter extends AsyncTask<Integer, Integer, Boolean> {
                 }
             }
         } else {
-            if (integers[0] == 0) {
+            if (where == 0) {
                 try {
                     manager.setBitmap(bitmap);
                 } catch (IOException e) {
@@ -73,9 +45,5 @@ public class WallpaperSetter extends AsyncTask<Integer, Integer, Boolean> {
             }
         }
         return true;
-    }
-
-    public interface OnWallpaperApplied{
-        void onTaskCompleted(boolean b);
     }
 }
