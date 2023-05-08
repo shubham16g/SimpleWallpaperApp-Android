@@ -58,11 +58,9 @@ public class MainApplication extends android.app.Application
         Utils.initTheme(this);
 
         SQLHelper sqlHelper = new SQLHelper(this);
-        dataService = new SQLDataServiceImpl(sqlHelper, new SQLFav(this));
-        InitSQL initSQL = new InitSQL(this, sqlHelper);
-
-        initSQL.setupCategories();
-        initSQL.setupWallpapers();
+        SQLFav sqlFav = new SQLFav(this);
+        dataService = new SQLDataServiceImpl(sqlHelper, sqlFav);
+        InitSQL.apply(this, sqlHelper, sqlFav);
 
 
         MobileAds.initialize(this, initializationStatus -> {

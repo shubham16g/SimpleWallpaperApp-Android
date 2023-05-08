@@ -5,13 +5,13 @@ import com.google.android.gms.ads.nativead.NativeAd;
 import java.io.Serializable;
 
 public class WallsPOJO implements Serializable {
-    private final int id;
+    private final int viewType;
     private final String name, previewUrl, url, categories;
     private final boolean premium;
     private NativeAd nativeAd;
 
-    public WallsPOJO(int id, String name, String previewUrl, String url, String categories, boolean premium) {
-        this.id = id;
+    public WallsPOJO(String url, String name, String previewUrl, String categories, boolean premium) {
+        this.viewType = 0;
         this.name = name;
         this.previewUrl = previewUrl;
         this.url = url;
@@ -21,7 +21,7 @@ public class WallsPOJO implements Serializable {
     }
 
     public WallsPOJO(NativeAd nativeAd){
-        id = -2;
+        viewType = -2;
         this.name = null;
         this.previewUrl = null;
         this.url = null;
@@ -30,7 +30,7 @@ public class WallsPOJO implements Serializable {
         this.nativeAd = nativeAd;
     }
     public WallsPOJO(boolean fullSize){
-        id = fullSize ? -3 : -1;
+        viewType = fullSize ? -3 : -1;
         this.name = null;
         this.previewUrl = null;
         this.url = null;
@@ -43,8 +43,8 @@ public class WallsPOJO implements Serializable {
         return nativeAd;
     }
 
-    public int getId() {
-        return id;
+    public int getViewType() {
+        return viewType;
     }
 
     public String getPreviewUrl() {

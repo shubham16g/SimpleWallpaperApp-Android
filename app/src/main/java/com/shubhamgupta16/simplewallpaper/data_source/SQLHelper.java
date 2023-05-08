@@ -45,7 +45,16 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(WALLPAPERS, null, null);
         db.delete(CATEGORIES, null, null);
-        db.close();
+
+    }
+
+    public boolean isExist(String url) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + WALLPAPERS + " WHERE url='" + url + "'", null);
+        boolean isExist = cursor.getCount() > 0;
+        cursor.close();
+
+        return isExist;
     }
 
     public void insertCategory(CategoryPOJO pojo) {
@@ -118,7 +127,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             res = 0;
         }
         cursor.close();
-        db.close();
+
         return res;
     }
 
@@ -152,7 +161,7 @@ public class SQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT * FROM " + WALLPAPERS + extras + " LIMIT " + offset + ", " + PER_PAGE_ITEM, null);
         while (cursor.moveToNext()) {
-            list.add(new WallsPOJO(cursor.getInt(0), cursor.getString(3), cursor.getString(2), cursor.getString(1), cursor.getString(4), cursor.getInt(5) != 0));
+            list.add(new WallsPOJO(cursor.getString(1), cursor.getString(3), cursor.getString(2), cursor.getString(4), cursor.getInt(5) != 0));
         }
         return list;
     }

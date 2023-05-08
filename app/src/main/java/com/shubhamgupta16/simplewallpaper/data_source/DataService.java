@@ -22,7 +22,7 @@ public interface DataService {
 
     void toggleFavorite(WallsPOJO wallId, boolean favorite);
 
-    boolean isFavorite(int id);
+    boolean isFavorite(String url);
 
     interface OnWallpapersLoaded {
         void onWallpapersLoaded(ArrayList<WallsPOJO> list);

@@ -200,6 +200,11 @@ public class WallsFragment extends Fragment {
                 list.remove(list.size() - 1);
             }
         } else {
+            if (!list.isEmpty()) {
+                int size = list.size();
+                list.clear();
+                adapter.notifyItemRangeRemoved(0, size);
+            }
             progressBar.setVisibility(View.GONE);
         }
         int from = list.size();
@@ -230,12 +235,9 @@ public class WallsFragment extends Fragment {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
         dataService.getPagesCount(type, extras, count -> maxPage = count);
         if (type == DataService.QueryType.FAVORITE) {
-            int size = list.size();
             adPositionList.clear();
             list.clear();
-            if (size > 0) {
-                adapter.notifyDataSetChanged();
-            }
+            adapter.notifyDataSetChanged();
             fetchWalls(1);
         } else
             adapter.notifyDataSetChanged();

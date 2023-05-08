@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager;
 import com.shubhamgupta16.simplewallpaper.BuildConfig;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +22,10 @@ public class InitSQL {
     private final Context context;
     private final SQLHelper sqlHelper;
 
-    public InitSQL(Context context, SQLHelper sqlHelper) {
+    public static void apply(Context context, SQLHelper sqlHelper, SQLFav sqlFav) {
+        new InitSQL(context, sqlHelper, sqlFav);
+    }
+    private InitSQL(Context context, SQLHelper sqlHelper, SQLFav sqlFav) {
         this.context = context;
         this.sqlHelper = sqlHelper;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -30,7 +34,16 @@ public class InitSQL {
             sqlHelper.clearAll();
             setupCategories();
             setupWallpapers();
+            filterFavorites(sqlFav);
             prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
+        }
+    }
+
+    public void filterFavorites(SQLFav fav) {
+        for (WallsPOJO pojo : fav.getAllWallpapers()) {
+            if (!sqlHelper.isExist(pojo.getUrl())) {
+                fav.toggleFavorite(pojo, false);
+            }
         }
     }
 
@@ -58,10 +71,9 @@ public class InitSQL {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 WallsPOJO pojo = new WallsPOJO(
-                        0,
+                        object.getString("url"),
                         object.getString("name"),
                         object.getString("previewUrl"),
-                        object.getString("url"),
                         object.getString("categories"),
                         object.optBoolean("premium", false)
                 );

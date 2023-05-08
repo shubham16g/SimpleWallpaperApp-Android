@@ -273,7 +273,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private void setupBottomNav() {
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
-        if (dataService.isFavorite(pojo.getId()))
+        if (dataService.isFavorite(pojo.getUrl()))
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
@@ -301,7 +301,7 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 //        favorite button click
         favoriteButton.setOnClickListener(view -> {
-            if (dataService.isFavorite(pojo.getId())) {
+            if (dataService.isFavorite(pojo.getUrl())) {
                 dataService.toggleFavorite(pojo, false);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
             } else {
@@ -517,8 +517,8 @@ public class WallpaperActivity extends AppCompatActivity {
     protected void onDestroy() {
         bannerAdView.destroy();
         Intent i = new Intent();
-        i.putExtra("id", pojo.getId());
-        i.putExtra("fav", dataService.isFavorite(pojo.getId()));
+        i.putExtra("id", pojo.getViewType());
+        i.putExtra("fav", dataService.isFavorite(pojo.getUrl()));
         setResult(RESULT_OK, i);
         super.onDestroy();
     }

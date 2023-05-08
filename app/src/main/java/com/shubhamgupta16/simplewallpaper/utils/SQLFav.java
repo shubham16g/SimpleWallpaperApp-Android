@@ -1,6 +1,5 @@
 package com.shubhamgupta16.simplewallpaper.utils;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,10 +11,11 @@ import androidx.annotation.Nullable;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SQLFav extends SQLiteOpenHelper {
     private static final String FAVORITES = "favs";
-    private static final String DB_NAME = "fav00";
+    private static final String DB_NAME = "fav000";
 
     private static final int PER_PAGE_ITEM = 16;
 
@@ -26,7 +26,7 @@ public class SQLFav extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + FAVORITES + "(id INTEGER PRIMARY KEY, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, color VARCHAR, colorCode VARCHAR);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + FAVORITES + "(url VARCHAR PRIMARY KEY, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, color VARCHAR, colorCode VARCHAR);");
     }
 
     @Override
@@ -34,40 +34,57 @@ public class SQLFav extends SQLiteOpenHelper {
 
     }
 
+    public List<WallsPOJO> getAllWallpapers() {
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<WallsPOJO> list = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + FAVORITES, null);
+        while (cursor.moveToNext()) {
+            list.add(new WallsPOJO(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3), cursor.getInt(5) != 0));
+        }
+        cursor.close();
+        return list;
+    }
+
     public ArrayList<WallsPOJO> getWallpapers(int page) {
         int offset = (page - 1) * PER_PAGE_ITEM;
 
         ArrayList<WallsPOJO> list = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT * FROM " + FAVORITES + " LIMIT " + offset + ", " + PER_PAGE_ITEM, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + FAVORITES + " LIMIT " + offset + ", " + PER_PAGE_ITEM, null);
         while (cursor.moveToNext()) {
-            list.add(new WallsPOJO(cursor.getInt(0), cursor.getString(3), cursor.getString(2), cursor.getString(1), cursor.getString(4), cursor.getInt(5) != 0));
+            list.add(new WallsPOJO(cursor.getString(0), cursor.getString(2), cursor.getString(1), cursor.getString(3), cursor.getInt(5) != 0));
         }
+        cursor.close();
         return list;
     }
 
     public int getPagesCount() {
         SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT count(*) FROM " + FAVORITES, null);
+        Cursor c = db.rawQuery("SELECT count(*) FROM " + FAVORITES, null);
         if (c.moveToFirst()) {
-            return (int) Math.ceil(c.getInt(0) / (float) PER_PAGE_ITEM);
-        } else return 0;
+            int count = c.getInt(0);
+            c.close();
+
+            return (int) Math.ceil(count / (float) PER_PAGE_ITEM);
+        } else {
+            c.close();
+            return 0;
+        }
     }
 
 
     public void toggleFavorite(WallsPOJO wall, boolean favorite) {
         SQLiteDatabase db = this.getWritableDatabase();
-        boolean isFavorite = isFavorite(wall.getId());
+        boolean isFavorite = isFavorite(wall.getUrl());
         if (isFavorite == favorite) {
             return;
         }
         if (!favorite) {
-            db.delete(FAVORITES, "id=" + wall.getId(), null);
+            db.delete(FAVORITES, "url='" + wall.getUrl() + "'", null);
             return;
         }
         ContentValues contentValues = new ContentValues();
         contentValues.put("previewUrl", wall.getPreviewUrl());
-        contentValues.put("id", wall.getId());
         contentValues.put("name", wall.getName());
         contentValues.put("categories", wall.getCategories());
         contentValues.put("premium", wall.isPremium() ? 1 : 0);
@@ -76,11 +93,14 @@ public class SQLFav extends SQLiteOpenHelper {
 
     }
 
-    public boolean isFavorite(int id) {
+    public boolean isFavorite(String url) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT count(*) FROM " + FAVORITES + " WHERE id=" + id, null);
+        Cursor c = db.rawQuery("SELECT count(*) FROM " + FAVORITES + " WHERE url='" + url + "'", null);
         if (c.moveToFirst()) {
-            return c.getInt(0) != 0;
+            int count = c.getInt(0);
+            c.close();
+
+            return count != 0;
         }
         c.close();
         return false;

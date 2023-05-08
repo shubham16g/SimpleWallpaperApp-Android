@@ -73,7 +73,7 @@ public class SQLDataServiceImpl implements DataService {
     }
 
     @Override
-    public boolean isFavorite(int id) {
-        return sqlFav.isFavorite(id);
+    public boolean isFavorite(String url) {
+        return sqlFav.isFavorite(url);
     }
 }

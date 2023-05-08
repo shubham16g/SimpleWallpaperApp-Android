@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         switchFrag(currentFragPos, false);
+        Log.d("TAG", "onStart: called");
         if (currentFragPos == 0)
             wallsFragment.focus();
         if (currentFragPos == 2)

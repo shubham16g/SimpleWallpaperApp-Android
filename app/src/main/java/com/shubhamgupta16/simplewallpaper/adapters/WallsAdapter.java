@@ -61,11 +61,11 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        if (list.get(position).getId() == -1)
+        if (list.get(position).getViewType() == -1)
             return 0;
-        else if (list.get(position).getId() == -2)
+        else if (list.get(position).getViewType() == -2)
             return 2;
-        else if (list.get(position).getId() == -3)
+        else if (list.get(position).getViewType() == -3)
             return 3;
         else return 1;
 
@@ -101,17 +101,17 @@ public class WallsAdapter extends RecyclerView.Adapter<WallsAdapter.ViewHolder> 
             context.startActivity(i);
         });
 
-        handleHeart(position, pojo.getId(), holder.heartImage);
+        handleHeart(position, pojo.getUrl(), holder.heartImage);
     }
 
-    private void handleHeart(final int position, final int id, final ImageView heartImage) {
-        if (dataService.isFavorite(id)) {
+    private void handleHeart(final int position, final String url, final ImageView heartImage) {
+        if (dataService.isFavorite(url)) {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         } else {
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
         }
         heartImage.setOnClickListener(view -> {
-            if (dataService.isFavorite(id)) {
+            if (dataService.isFavorite(url)) {
                 dataService.toggleFavorite(list.get(position), false);
                 if (type == DataService.QueryType.FAVORITE) {
                     list.remove(position);
