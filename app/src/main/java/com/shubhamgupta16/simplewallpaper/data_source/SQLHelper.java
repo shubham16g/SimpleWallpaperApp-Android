@@ -41,6 +41,13 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     }
 
+    public void clearAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(WALLPAPERS, null, null);
+        db.delete(CATEGORIES, null, null);
+        db.close();
+    }
+
     public void insertCategory(CategoryPOJO pojo) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();

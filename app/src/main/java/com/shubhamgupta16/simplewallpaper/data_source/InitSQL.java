@@ -1,7 +1,11 @@
 package com.shubhamgupta16.simplewallpaper.data_source;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import androidx.preference.PreferenceManager;
+
+import com.shubhamgupta16.simplewallpaper.BuildConfig;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
@@ -20,6 +24,14 @@ public class InitSQL {
     public InitSQL(Context context, SQLHelper sqlHelper) {
         this.context = context;
         this.sqlHelper = sqlHelper;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int version = prefs.getInt("version",0);
+        if (version != BuildConfig.VERSION_CODE) {
+            sqlHelper.clearAll();
+            setupCategories();
+            setupWallpapers();
+            prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
+        }
     }
 
     public void setupCategories() {
