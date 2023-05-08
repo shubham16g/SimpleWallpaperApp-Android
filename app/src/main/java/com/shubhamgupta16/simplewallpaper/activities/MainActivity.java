@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchFilter(String query) {
-        Log.d("tagtag", "search");
         switch (currentFragPos) {
             case 0:
                 wallsFragment.setFragment(DataService.QueryType.SEARCH, query);
@@ -93,14 +92,10 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 categoryFragment.setFragment(query);
                 break;
-            case 2:
-                favoriteFragment.setFragment(DataService.QueryType.FAVORITE, query);
-                break;
         }
     }
 
     private void closeSearch() {
-        Log.d("tagtag", "closeSearch");
         switch (currentFragPos) {
             case 0:
                 wallsFragment.setFragment(DataService.QueryType.NONE, "");
@@ -116,8 +111,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-
+        if (currentFragPos == 2) {
+            getMenuInflater().inflate(R.menu.main_menu_fav, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.main_menu, menu);
+        }
         menu.findItem(R.id.action_settings).setOnMenuItemClickListener(menuItem -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -130,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
             return true;
         });
+
+        if (currentFragPos == 2) {
+            return super.onCreateOptionsMenu(menu);
+        }
 
         searchItem = menu.findItem(R.id.action_search);
         searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -155,9 +157,6 @@ public class MainActivity extends AppCompatActivity {
             break;
             case 1:
                 searchView.setQueryHint("Search Collection...");
-                break;
-            case 2:
-                searchView.setQueryHint("Search Favorite...");
                 break;
         }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
