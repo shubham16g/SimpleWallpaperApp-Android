@@ -3,13 +3,26 @@ package com.shubhamgupta16.simplewallpaper.utils;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 
-public class FastBlurTransform {
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
-    public static final float SCALE = 2;
-    public static final int RADIUS = 18;
+import java.security.MessageDigest;
 
-    public static Bitmap apply(Bitmap sentBitmap) {
+
+public class FastBlurTransform extends BitmapTransformation {
+
+
+    final float scale;
+    final int radius;
+
+    public FastBlurTransform(float scale, int radius) {
+        this.scale = scale;
+        this.radius = radius;
+    }
+
+    public static Bitmap apply(Bitmap sentBitmap, float SCALE, int RADIUS) {
 
         int width = Math.round(sentBitmap.getWidth() * SCALE);
         int height = Math.round(sentBitmap.getHeight() * SCALE);
@@ -240,5 +253,17 @@ public class FastBlurTransform {
         bitmap.setPixels(pix, 0, w, 0, 0, w, h);
 
         return (bitmap);
+    }
+
+    @Override
+    protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+        if (radius <= 1)
+            return toTransform;
+        return apply(toTransform, scale, radius);
+    }
+
+    @Override
+    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        messageDigest.update("blur transformation".getBytes());
     }
 }

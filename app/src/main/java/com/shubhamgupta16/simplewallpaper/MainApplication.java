@@ -15,6 +15,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
 import com.shubhamgupta16.simplewallpaper.data_source.InitSQL;
@@ -38,11 +39,13 @@ public class MainApplication extends android.app.Application
     public static DataService getDataService(Application application) {
         return ((MainApplication) application).dataService;
     }
-    public void interstitialShown(){
+
+    public void interstitialShown() {
         Log.d(TAG, "interstitialShown: called");
         cardClicks = 0;
     }
-    public boolean canShowInterstitial(){
+
+    public boolean canShowInterstitial() {
         cardClicks++;
         Log.d(TAG, "canShowInterstitial: " + cardClicks);
         return cardClicks >= interstitialAfterClicks;
@@ -58,9 +61,10 @@ public class MainApplication extends android.app.Application
         Utils.initTheme(this);
 
         SQLWallpapers sqlWallpapers = new SQLWallpapers(this);
+        SQLCategories sqlCategories = new SQLCategories(this);
         SQLFav sqlFav = new SQLFav(this);
-        dataService = new SQLDataServiceImpl(sqlWallpapers, sqlFav);
-        InitSQL.apply(this, sqlWallpapers, sqlFav);
+        dataService = new SQLDataServiceImpl(sqlWallpapers, sqlCategories, sqlFav);
+        InitSQL.apply(this, sqlWallpapers, sqlCategories, sqlFav);
 
 
         MobileAds.initialize(this, initializationStatus -> {
@@ -80,7 +84,7 @@ public class MainApplication extends android.app.Application
 
             @Override
             public void onAdShown() {
-                if (currentActivity instanceof SplashActivity){
+                if (currentActivity instanceof SplashActivity) {
                     ((SplashActivity) currentActivity).notifyAdShown();
                 }
             }
@@ -92,7 +96,7 @@ public class MainApplication extends android.app.Application
 
             @Override
             public void onAdComplete() {
-                if (currentActivity instanceof SplashActivity){
+                if (currentActivity instanceof SplashActivity) {
                     ((SplashActivity) currentActivity).notifyAdComplete();
                 }
             }
@@ -105,7 +109,7 @@ public class MainApplication extends android.app.Application
 
     }
 
-    private void tryShowSplashAd(){
+    private void tryShowSplashAd() {
         if (currentActivity instanceof SplashActivity) {
             appOpenAdManager.showAdIfAvailable(currentActivity);
         }

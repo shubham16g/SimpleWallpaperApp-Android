@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private void searchFilter(String query) {
         switch (currentFragPos) {
             case 0:
+                Log.d("TAG", "searchFilter: " + query);
                 wallsFragment.setFragment(DataService.QueryType.SEARCH, query);
                 break;
             case 1:

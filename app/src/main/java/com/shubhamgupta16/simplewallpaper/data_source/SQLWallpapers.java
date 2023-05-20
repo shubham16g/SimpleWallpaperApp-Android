@@ -1,5 +1,7 @@
 package com.shubhamgupta16.simplewallpaper.data_source;
 
+import static com.shubhamgupta16.simplewallpaper.data_source.DataService.PER_PAGE_ITEM;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,7 +11,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
@@ -17,8 +18,7 @@ import java.util.ArrayList;
 public class SQLWallpapers extends SQLiteOpenHelper {
     public static final String DB_NAME = "itsWallpapers";
     public static final String WALLPAPERS = "wallpapers";
-    public static final String CATEGORIES = "categories";
-    private static final int PER_PAGE_ITEM = 16;
+
 
     public enum QueryType {
         NONE,
@@ -33,7 +33,6 @@ public class SQLWallpapers extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + WALLPAPERS + "(id INTEGER PRIMARY KEY AUTOINCREMENT, url VARCHAR, previewUrl VARCHAR, name VARCHAR, categories VARCHAR, premium INTEGER, color VARCHAR, colorCode VARCHAR);");
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + CATEGORIES + "(name VARCHAR PRIMARY KEY, preview1 VARCHAR, preview2 VARCHAR, preview3 VARCHAR);");
     }
 
     @Override
@@ -44,8 +43,13 @@ public class SQLWallpapers extends SQLiteOpenHelper {
     public void clearAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(WALLPAPERS, null, null);
-        db.delete(CATEGORIES, null, null);
-
+        try {
+            db.delete("categories", null, null);
+            Cursor c = db.rawQuery("DROP TABLE IF EXISTS categories", null);
+            c.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isExist(String url) {
@@ -55,20 +59,6 @@ public class SQLWallpapers extends SQLiteOpenHelper {
         cursor.close();
 
         return isExist;
-    }
-
-    public void insertCategory(CategoryPOJO pojo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("preview1", pojo.getPreview1());
-        contentValues.put("preview2", pojo.getPreview2());
-        contentValues.put("preview3", pojo.getPreview3());
-        if (checkAvailableCategory(pojo.getName())) {
-            db.update(CATEGORIES, contentValues, "name='" + pojo.getName() + "'", null);
-        } else {
-            contentValues.put("name", pojo.getName());
-            db.insert(CATEGORIES, null, contentValues);
-        }
     }
 
     public void insertWallpaper(WallsPOJO pojo) {
@@ -92,30 +82,8 @@ public class SQLWallpapers extends SQLiteOpenHelper {
         return c.moveToFirst();
     }
 
-    private boolean checkAvailableCategory(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT name FROM " + CATEGORIES + " WHERE name='" + name + "'", null);
-        return c.moveToFirst();
-    }
 
-    @SuppressLint("Recycle")
-    public ArrayList<CategoryPOJO> getCategories(String query) {
-        ArrayList<CategoryPOJO> list = new ArrayList<>();
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        Cursor cursor;
-        if (query == null) {
-            cursor = db.rawQuery("SELECT * FROM " + CATEGORIES, null);
-        } else {
-            cursor = db.rawQuery("SELECT * FROM " + CATEGORIES + " WHERE name LIKE '%" + query + "%'", null);
-        }
-        while (cursor.moveToNext()) {
-            list.add(new CategoryPOJO(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), getWallsInCategoryCount(cursor.getString(0))));
-        }
-        return list;
-    }
-
-    private int getWallsInCategoryCount(String name) {
+     int getWallsInCategoryCount(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor;
@@ -132,12 +100,9 @@ public class SQLWallpapers extends SQLiteOpenHelper {
     }
 
 
+
     public ArrayList<WallsPOJO> getWallpapers(int page, QueryType type, String string) {
         return getListByPages(page, getWhereStatement(type, string));
-    }
-
-    public int getPagesCount(QueryType type, String string) {
-        return getPagesCount(getWhereStatement(type, string));
     }
 
 
@@ -164,14 +129,6 @@ public class SQLWallpapers extends SQLiteOpenHelper {
             list.add(new WallsPOJO(cursor.getString(1), cursor.getString(3), cursor.getString(2), cursor.getString(4), cursor.getInt(5) != 0));
         }
         return list;
-    }
-
-    private int getPagesCount(String extras) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT count(*) FROM " + WALLPAPERS + extras, null);
-        if (c.moveToFirst()) {
-            return (int) Math.ceil(c.getInt(0) / (float) PER_PAGE_ITEM);
-        } else return 0;
     }
 
 }
