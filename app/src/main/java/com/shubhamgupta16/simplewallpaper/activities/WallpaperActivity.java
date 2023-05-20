@@ -30,6 +30,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -168,21 +169,23 @@ public class WallpaperActivity extends AppCompatActivity {
         photoView.setZoomable(false);
 
 //        load blur image into photoView
-        Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
+        Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).diskCacheStrategy(DiskCacheStrategy.DATA).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 if (!showThumbnail) return;
                 thumbView.setAlpha(0f);
-                thumbView.setImageBitmap(FastBlurTransform.apply(resource));
-                thumbView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(500).start();
+                thumbView.setImageBitmap(FastBlurTransform.apply(resource, 1, 10));
+                thumbView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(300).start();
+                handler.postDelayed(() -> loadHD(), 700);
             }
 
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) {
             }
         });
+    }
 
-//        load high res image into photoView
+    private void loadHD() {
         Glide.with(this).asBitmap().load(pojo.getUrl()).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -206,7 +209,7 @@ public class WallpaperActivity extends AppCompatActivity {
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 photoView.setAlpha(0f);
                 photoView.setImageBitmap(resource);
-                photoView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(500).start();
+                photoView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(300).start();
             }
 
             @Override
