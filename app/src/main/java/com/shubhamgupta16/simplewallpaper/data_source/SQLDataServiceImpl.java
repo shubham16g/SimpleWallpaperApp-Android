@@ -12,16 +12,18 @@ import java.util.ArrayList;
 public class SQLDataServiceImpl implements DataService {
 
     final SQLWallpapers sqlWallpapers;
+    final SQLCategories sqlCategories;
     final SQLFav sqlFav;
 
-    public SQLDataServiceImpl(SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
+    public SQLDataServiceImpl(SQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
         this.sqlWallpapers = sqlWallpapers;
+        this.sqlCategories = sqlCategories;
         this.sqlFav = sqlFav;
     }
 
     @Override
     public ArrayList<CategoryPOJO> getCategories(String query) {
-        return sqlWallpapers.getCategories(query);
+        return sqlCategories.getCategories(query);
     }
 
     @Override

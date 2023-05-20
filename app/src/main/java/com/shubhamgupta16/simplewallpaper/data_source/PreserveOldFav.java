@@ -43,6 +43,8 @@ public class PreserveOldFav extends SQLiteOpenHelper {
                 fav.toggleFavorite(pojo, true);
             }
             cursor.close();
+            db.delete(OLD_WALLPAPERS, null, null);
+            db.rawQuery("DROP TABLE IF EXISTS " + OLD_WALLPAPERS, null).close();
         } catch (Exception ignored) {
         }
     }

@@ -22,18 +22,23 @@ public class InitSQL {
     private final Context context;
     private final SQLWallpapers sqlWallpapers;
 
-    public static void apply(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
-        new InitSQL(context, sqlWallpapers, sqlFav);
+    private final SQLCategories sqlCategories;
+
+    public static void apply(Context context, SQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
+        new InitSQL(context, sqlWallpapers, sqlFav, sqlCategories);
     }
-    private InitSQL(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav) {
+
+    private InitSQL(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav, SQLCategories sqlCategories) {
         this.context = context;
         this.sqlWallpapers = sqlWallpapers;
+        this.sqlCategories = sqlCategories;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int version = prefs.getInt("version",0);
+        int version = prefs.getInt("version", 0);
         if (version != BuildConfig.VERSION_CODE) {
             sqlWallpapers.clearAll();
-            setupCategories();
+            sqlCategories.clearAll();
             setupWallpapers();
+            setupCategories();
             PreserveOldFav.apply(context, sqlFav);
             filterFavorites(sqlFav);
             prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
@@ -58,8 +63,8 @@ public class InitSQL {
                         object.getString("preview1"),
                         object.getString("preview2"),
                         object.getString("preview3"),
-                        0);
-                sqlWallpapers.insertCategory(pojo);
+                        sqlWallpapers.getWallsInCategoryCount(object.getString("name")));
+                sqlCategories.insertCategory(pojo);
             }
         } catch (JSONException e) {
             e.printStackTrace();
