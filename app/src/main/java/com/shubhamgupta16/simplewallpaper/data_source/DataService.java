@@ -2,29 +2,51 @@ package com.shubhamgupta16.simplewallpaper.data_source;
 
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 
 import java.util.ArrayList;
 
-public interface DataService {
+public abstract class DataService {
 
-    int PER_PAGE_ITEM = 16;
+    public static final int PER_PAGE_ITEM = 16;
 
-    enum QueryType {
+    protected DataService(SQLCategories sqlCategories, SQLFav sqlFav) {
+        this.sqlCategories = sqlCategories;
+        this.sqlFav = sqlFav;
+    }
+
+    public enum QueryType {
         NONE,
         CATEGORY,
         FAVORITE,
         SEARCH
     }
 
-    ArrayList<CategoryPOJO> getCategories(String query);
 
-    void getWallpapers(int page, DataService.QueryType type, String string, OnWallpapersLoaded onWallpapersLoaded);
+    protected final SQLCategories sqlCategories;
+    protected final SQLFav sqlFav;
 
-    void toggleFavorite(WallsPOJO wallId, boolean favorite);
+    public ArrayList<CategoryPOJO> getCategories(String query) {
+        return sqlCategories.getCategories(query);
+    }
 
-    boolean isFavorite(String url);
+    abstract public void setupCategories(OnCategoriesLoaded onCategoriesLoaded);
 
-    interface OnWallpapersLoaded {
+    abstract public void getWallpapers(int page, DataService.QueryType type, String string, OnWallpapersLoaded onWallpapersLoaded);
+
+
+    public void toggleFavorite(WallsPOJO wallsPojo, boolean favorite) {
+        sqlFav.toggleFavorite(wallsPojo, favorite);
+    }
+
+    public boolean isFavorite(String url) {
+        return sqlFav.isFavorite(url);
+    }
+
+    public interface OnCategoriesLoaded {
+        void onCategoriesLoaded();
+    }
+    public interface OnWallpapersLoaded {
         void onWallpapersLoaded(ArrayList<WallsPOJO> list);
     }
 

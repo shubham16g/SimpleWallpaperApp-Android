@@ -1,4 +1,4 @@
-package com.shubhamgupta16.simplewallpaper.data_source;
+package com.shubhamgupta16.simplewallpaper.data_source.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import com.shubhamgupta16.simplewallpaper.BuildConfig;
+import com.shubhamgupta16.simplewallpaper.data_source.PreserveOldFav;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
@@ -18,34 +20,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class InitSQL {
-    private final Context context;
-    private final SQLWallpapers sqlWallpapers;
-
-    private final SQLCategories sqlCategories;
-
-    public static void apply(Context context, SQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
-        new InitSQL(context, sqlWallpapers, sqlFav, sqlCategories);
-    }
-
-    private InitSQL(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav, SQLCategories sqlCategories) {
-        this.context = context;
-        this.sqlWallpapers = sqlWallpapers;
-        this.sqlCategories = sqlCategories;
+public abstract class InitSQL {
+    public static void applyWallpapers(Context context, InternalSQLWallpapers sqlWallpapers, SQLFav sqlFav) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int version = prefs.getInt("version", 0);
-        if (version != BuildConfig.VERSION_CODE) {
+        if (version == BuildConfig.VERSION_CODE) {
             sqlWallpapers.clearAll();
-            sqlCategories.clearAll();
-            setupWallpapers();
-            setupCategories();
+            setupWallpapers(context, sqlWallpapers);
             PreserveOldFav.apply(context, sqlFav);
-            filterFavorites(sqlFav);
+            filterFavorites(sqlFav, sqlWallpapers);
             prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
         }
     }
 
-    public void filterFavorites(SQLFav fav) {
+    public static void applyCategories(Context context, InternalSQLWallpapers sqlWallpapers, SQLCategories sqlCategories) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int version = prefs.getInt("version", 0);
+        if (version == BuildConfig.VERSION_CODE) {
+            sqlCategories.clearAll();
+            setupCategories(context, sqlCategories, sqlWallpapers);
+            prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
+        }
+    }
+
+    private static void filterFavorites(SQLFav fav, InternalSQLWallpapers sqlWallpapers) {
         for (WallsPOJO pojo : fav.getAllWallpapers()) {
             if (!sqlWallpapers.isExist(pojo.getUrl())) {
                 fav.toggleFavorite(pojo, false);
@@ -53,9 +51,9 @@ public class InitSQL {
         }
     }
 
-    public void setupCategories() {
+    private static void setupCategories(Context context, SQLCategories sqlCategories, InternalSQLWallpapers sqlWallpapers) {
         try {
-            JSONArray array = new JSONArray(readJSONFromAsset("categories"));
+            JSONArray array = new JSONArray(readJSONFromAsset(context,"categories"));
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 CategoryPOJO pojo = new CategoryPOJO(
@@ -71,9 +69,9 @@ public class InitSQL {
         }
     }
 
-    public void setupWallpapers() {
+    private static void setupWallpapers(Context context, InternalSQLWallpapers sqlWallpapers) {
         try {
-            JSONArray array = new JSONArray(readJSONFromAsset("wallpapers"));
+            JSONArray array = new JSONArray(readJSONFromAsset(context,"wallpapers"));
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 WallsPOJO pojo = new WallsPOJO(
@@ -91,7 +89,7 @@ public class InitSQL {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private String readJSONFromAsset(String fileName) {
+    private static String readJSONFromAsset(Context context, String fileName) {
         String json;
         try {
             InputStream is = context.getAssets().open(fileName + ".json");
