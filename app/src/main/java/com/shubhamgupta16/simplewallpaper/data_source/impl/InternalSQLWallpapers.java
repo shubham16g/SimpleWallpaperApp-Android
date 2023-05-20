@@ -15,7 +15,7 @@ import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 
 import java.util.ArrayList;
 
-public class SQLWallpapers extends SQLiteOpenHelper {
+public class InternalSQLWallpapers extends SQLiteOpenHelper {
     public static final String DB_NAME = "itsWallpapers";
     public static final String WALLPAPERS = "wallpapers";
 
@@ -26,7 +26,7 @@ public class SQLWallpapers extends SQLiteOpenHelper {
         SEARCH
     }
 
-    public SQLWallpapers(@Nullable Context context) {
+    public InternalSQLWallpapers(@Nullable Context context) {
         super(context, DB_NAME, null, 1);
     }
 

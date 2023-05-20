@@ -22,15 +22,15 @@ import java.nio.charset.StandardCharsets;
 
 public class InitSQL {
     private final Context context;
-    private final SQLWallpapers sqlWallpapers;
+    private final InternalSQLWallpapers sqlWallpapers;
 
     private final SQLCategories sqlCategories;
 
-    public static void apply(Context context, SQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
+    public static void apply(Context context, InternalSQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
         new InitSQL(context, sqlWallpapers, sqlFav, sqlCategories);
     }
 
-    private InitSQL(Context context, SQLWallpapers sqlWallpapers, SQLFav sqlFav, SQLCategories sqlCategories) {
+    private InitSQL(Context context, InternalSQLWallpapers sqlWallpapers, SQLFav sqlFav, SQLCategories sqlCategories) {
         this.context = context;
         this.sqlWallpapers = sqlWallpapers;
         this.sqlCategories = sqlCategories;

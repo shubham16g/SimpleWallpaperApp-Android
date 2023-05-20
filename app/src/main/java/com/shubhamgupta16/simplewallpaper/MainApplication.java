@@ -18,8 +18,6 @@ import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
-import com.shubhamgupta16.simplewallpaper.data_source.impl.InitSQL;
-import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLWallpapers;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
@@ -60,12 +58,9 @@ public class MainApplication extends android.app.Application
         cardClicks = interstitialAfterClicks - 2;
         Utils.initTheme(this);
 
-        SQLWallpapers sqlWallpapers = new SQLWallpapers(this);
         SQLCategories sqlCategories = new SQLCategories(this);
         SQLFav sqlFav = new SQLFav(this);
-        dataService = new SQLDataServiceImpl(sqlWallpapers, sqlCategories, sqlFav);
-        InitSQL.apply(this, sqlWallpapers, sqlCategories, sqlFav);
-
+        dataService = new SQLDataServiceImpl(this, sqlCategories, sqlFav);
 
         MobileAds.initialize(this, initializationStatus -> {
         });

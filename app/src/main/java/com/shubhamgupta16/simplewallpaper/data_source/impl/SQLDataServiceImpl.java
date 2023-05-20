@@ -1,5 +1,6 @@
 package com.shubhamgupta16.simplewallpaper.data_source.impl;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -13,14 +14,15 @@ import java.util.ArrayList;
 
 public class SQLDataServiceImpl implements DataService {
 
-    final SQLWallpapers sqlWallpapers;
+    final InternalSQLWallpapers sqlWallpapers;
     final SQLCategories sqlCategories;
     final SQLFav sqlFav;
 
-    public SQLDataServiceImpl(SQLWallpapers sqlWallpapers, SQLCategories sqlCategories, SQLFav sqlFav) {
-        this.sqlWallpapers = sqlWallpapers;
+    public SQLDataServiceImpl(Context context, SQLCategories sqlCategories, SQLFav sqlFav) {
+        this.sqlWallpapers = new InternalSQLWallpapers(context);
         this.sqlCategories = sqlCategories;
         this.sqlFav = sqlFav;
+        InitSQL.apply(context, sqlWallpapers, sqlCategories, sqlFav);
     }
 
     @Override
@@ -34,13 +36,13 @@ public class SQLDataServiceImpl implements DataService {
             switch (type) {
                 case NONE:
                 default:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.NONE, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, InternalSQLWallpapers.QueryType.NONE, string));
                     break;
                 case CATEGORY:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.CATEGORY, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, InternalSQLWallpapers.QueryType.CATEGORY, string));
                     break;
                 case SEARCH:
-                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, SQLWallpapers.QueryType.SEARCH, string));
+                    onWallpapersLoaded.onWallpapersLoaded(sqlWallpapers.getWallpapers(page, InternalSQLWallpapers.QueryType.SEARCH, string));
                     break;
                 case FAVORITE:
                     onWallpapersLoaded.onWallpapersLoaded(sqlFav.getWallpapers(page));
