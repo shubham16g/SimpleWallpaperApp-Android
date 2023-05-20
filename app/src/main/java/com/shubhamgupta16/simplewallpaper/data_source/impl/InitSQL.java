@@ -1,4 +1,4 @@
-package com.shubhamgupta16.simplewallpaper.data_source;
+package com.shubhamgupta16.simplewallpaper.data_source.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import com.shubhamgupta16.simplewallpaper.BuildConfig;
+import com.shubhamgupta16.simplewallpaper.data_source.PreserveOldFav;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;

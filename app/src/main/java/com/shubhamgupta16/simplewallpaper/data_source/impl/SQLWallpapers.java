@@ -1,4 +1,4 @@
-package com.shubhamgupta16.simplewallpaper.data_source;
+package com.shubhamgupta16.simplewallpaper.data_source.impl;
 
 import static com.shubhamgupta16.simplewallpaper.data_source.DataService.PER_PAGE_ITEM;
 

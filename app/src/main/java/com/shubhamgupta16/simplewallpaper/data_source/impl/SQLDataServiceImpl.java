@@ -1,8 +1,10 @@
-package com.shubhamgupta16.simplewallpaper.data_source;
+package com.shubhamgupta16.simplewallpaper.data_source.impl;
 
 import android.os.Handler;
 import android.os.Looper;
 
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;

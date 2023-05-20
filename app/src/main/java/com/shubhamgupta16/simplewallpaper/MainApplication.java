@@ -16,10 +16,10 @@ import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLDataServiceImpl;
+import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
-import com.shubhamgupta16.simplewallpaper.data_source.InitSQL;
-import com.shubhamgupta16.simplewallpaper.data_source.SQLWallpapers;
+import com.shubhamgupta16.simplewallpaper.data_source.impl.InitSQL;
+import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLWallpapers;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
