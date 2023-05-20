@@ -1,5 +1,7 @@
 package com.shubhamgupta16.simplewallpaper.data_source;
 
+import static com.shubhamgupta16.simplewallpaper.data_source.DataService.PER_PAGE_ITEM;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +20,7 @@ public class SQLWallpapers extends SQLiteOpenHelper {
     public static final String DB_NAME = "itsWallpapers";
     public static final String WALLPAPERS = "wallpapers";
     public static final String CATEGORIES = "categories";
-    private static final int PER_PAGE_ITEM = 16;
+
 
     public enum QueryType {
         NONE,
@@ -136,10 +138,6 @@ public class SQLWallpapers extends SQLiteOpenHelper {
         return getListByPages(page, getWhereStatement(type, string));
     }
 
-    public int getPagesCount(QueryType type, String string) {
-        return getPagesCount(getWhereStatement(type, string));
-    }
-
 
     private String getWhereStatement(QueryType type, String string) {
         switch (type) {
@@ -164,14 +162,6 @@ public class SQLWallpapers extends SQLiteOpenHelper {
             list.add(new WallsPOJO(cursor.getString(1), cursor.getString(3), cursor.getString(2), cursor.getString(4), cursor.getInt(5) != 0));
         }
         return list;
-    }
-
-    private int getPagesCount(String extras) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.rawQuery("SELECT count(*) FROM " + WALLPAPERS + extras, null);
-        if (c.moveToFirst()) {
-            return (int) Math.ceil(c.getInt(0) / (float) PER_PAGE_ITEM);
-        } else return 0;
     }
 
 }

@@ -47,29 +47,8 @@ public class SQLDataServiceImpl implements DataService {
     }
 
     @Override
-    public void getPagesCount(DataService.QueryType type, String string, OnPagesCountLoaded onPagesCountLoaded) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            switch (type) {
-                case NONE:
-                default:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.NONE, string));
-                    break;
-                case CATEGORY:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.CATEGORY, string));
-                    break;
-                case SEARCH:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlWallpapers.getPagesCount(SQLWallpapers.QueryType.SEARCH, string));
-                    break;
-                case FAVORITE:
-                    onPagesCountLoaded.onPagesCountLoaded(sqlFav.getPagesCount());
-                    break;
-            }
-        }, type == QueryType.FAVORITE ? 200 : 800);
-    }
-
-    @Override
-    public void toggleFavorite(WallsPOJO wallId, boolean favorite) {
-        sqlFav.toggleFavorite(wallId, favorite);
+    public void toggleFavorite(WallsPOJO wallsPojo, boolean favorite) {
+        sqlFav.toggleFavorite(wallsPojo, favorite);
     }
 
     @Override

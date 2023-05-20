@@ -47,7 +47,8 @@ public class WallsFragment extends Fragment {
     private WallsAdapter adapter;
     private DataService dataService;
     private boolean isScrollLoad = false;
-    private int maxPage = 0, lastFetch = 0;
+    private int lastFetch = 0;
+    private boolean atEnd = false;
     private LinearLayout errorLayout;
     private ProgressBar progressBar;
 
@@ -95,9 +96,8 @@ public class WallsFragment extends Fragment {
                     scrollOutItems = 0;
                 }
                 if (isScrollLoad && (currentItems + scrollOutItems >= totalItems)) {
-                    dataService.getPagesCount(type, extras, count -> maxPage = count);
-                    if (lastFetch < maxPage) {
-                        isScrollLoad = false;
+                    isScrollLoad = false;
+                    if (!atEnd) {
                         fetchWalls(lastFetch + 1);
                         Log.d(TAG, "scroll to bottom " + type);
                     }
@@ -145,19 +145,20 @@ public class WallsFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     public void setFragment(DataService.QueryType type, String extras) {
-        Log.d("tagtag", "set" + type);
+        Log.d(TAG, "set" + type);
+        isScrollLoad = false;
         this.type = type;
         this.extras = extras;
         lastFetch = 0;
-        maxPage = 0;
+        atEnd = false;
         list.clear();
         adapter.setType(type);
         adapter.notifyDataSetChanged();
-        dataService.getPagesCount(type, extras, count -> maxPage = count);
+        progressBar.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
         setErrorLayout();
         fetchWalls(1);
-        if (maxPage > 1 && nativeAdList.isEmpty())
+        if (!atEnd && nativeAdList.isEmpty())
             loadNativeAds();
     }
 
@@ -182,7 +183,7 @@ public class WallsFragment extends Fragment {
     }
 
     private void fetchWalls(final int page) {
-        Log.d("tagtag", "fetch page: " + page + "type" + type);
+        Log.d(TAG, "fetch page: " + page + "type" + type);
         if (page == 1) {
             errorLayout.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
@@ -192,6 +193,19 @@ public class WallsFragment extends Fragment {
     }
 
     private void handleRes(int page, ArrayList<WallsPOJO> walls) {
+        Log.d(TAG, "handleRes: " + walls.size());
+        if (walls.isEmpty()) {
+            atEnd = true;
+            progressBar.setVisibility(View.GONE);
+            handleErrorLayout();
+            if (!list.isEmpty() && list.get(list.size() - 1).getViewType() == -1) {
+                list.remove(list.size() - 1);
+                adapter.notifyItemRemoved(list.size());
+                list.remove(list.size() - 1);
+                adapter.notifyItemRemoved(list.size());
+            }
+            return;
+        }
         if (page != 1) {
             if (list.size() >= 1) {
                 list.remove(list.size() - 1);
@@ -205,19 +219,26 @@ public class WallsFragment extends Fragment {
                 list.clear();
                 adapter.notifyItemRangeRemoved(0, size);
             }
-            progressBar.setVisibility(View.GONE);
         }
         int from = list.size();
-        list.addAll(walls);
-        if (page >= 1 && page != maxPage && !list.isEmpty()) {
-            adPositionList.add(list.size());
+        if (walls.size() > 2) {
+            list.addAll(walls.subList(0, 2));
+            if (page > 1 && !atEnd && !list.isEmpty()) {
+                adPositionList.add(list.size());
 
-            if (nativeAdList.isEmpty()) {
-                list.add(new WallsPOJO(null));
-            } else {
-                int adPos = (adPositionList.size() - 1) % nativeAdList.size();
-                list.add(new WallsPOJO(nativeAdList.get(adPos)));
+                if (nativeAdList.isEmpty()) {
+                    list.add(new WallsPOJO(null));
+                } else {
+                    int adPos = (adPositionList.size() - 1) % nativeAdList.size();
+                    list.add(new WallsPOJO(nativeAdList.get(adPos)));
+                }
             }
+            list.addAll(walls.subList(2, walls.size()));
+        } else {
+            list.addAll(walls);
+        }
+        if (page >= 1 && !atEnd && !list.isEmpty() && walls.size() >= DataService.PER_PAGE_ITEM) {
+
             list.add(new WallsPOJO(false));
             list.add(new WallsPOJO(false));
         }
@@ -227,13 +248,14 @@ public class WallsFragment extends Fragment {
         lastFetch = page;
         isScrollLoad = true;
 
+        progressBar.setVisibility(View.GONE);
+
         handleErrorLayout();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void focus() {
         Log.d("tagtag", "focus, " + list.size() + " " + type);
-        dataService.getPagesCount(type, extras, count -> maxPage = count);
         if (type == DataService.QueryType.FAVORITE) {
             adPositionList.clear();
             list.clear();
