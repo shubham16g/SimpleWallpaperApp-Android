@@ -6,28 +6,24 @@ import android.os.Looper;
 
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
-import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
-import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 
-import java.util.ArrayList;
-
-public class SQLDataServiceImpl implements DataService {
+public class SQLDataServiceImpl extends DataService {
 
     final InternalSQLWallpapers sqlWallpapers;
-    final SQLCategories sqlCategories;
-    final SQLFav sqlFav;
+    final Context context;
 
     public SQLDataServiceImpl(Context context, SQLCategories sqlCategories, SQLFav sqlFav) {
+        super(sqlCategories, sqlFav);
+        this.context = context;
         this.sqlWallpapers = new InternalSQLWallpapers(context);
-        this.sqlCategories = sqlCategories;
-        this.sqlFav = sqlFav;
-        InitSQL.apply(context, sqlWallpapers, sqlCategories, sqlFav);
+        InitSQL.applyWallpapers(context, sqlWallpapers, sqlFav);
     }
 
     @Override
-    public ArrayList<CategoryPOJO> getCategories(String query) {
-        return sqlCategories.getCategories(query);
+    public void setupCategories(OnCategoriesLoaded onCategoriesLoaded) {
+        InitSQL.applyCategories(context, sqlWallpapers, sqlCategories);
+        onCategoriesLoaded.onCategoriesLoaded();
     }
 
     @Override
@@ -50,15 +46,5 @@ public class SQLDataServiceImpl implements DataService {
             }
         }, type == QueryType.FAVORITE ? 200 : 800);
 
-    }
-
-    @Override
-    public void toggleFavorite(WallsPOJO wallsPojo, boolean favorite) {
-        sqlFav.toggleFavorite(wallsPojo, favorite);
-    }
-
-    @Override
-    public boolean isFavorite(String url) {
-        return sqlFav.isFavorite(url);
     }
 }

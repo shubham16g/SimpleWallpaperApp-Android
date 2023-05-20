@@ -176,13 +176,13 @@ public class WallpaperActivity extends AppCompatActivity {
                 thumbView.setAlpha(0f);
                 thumbView.setImageBitmap(FastBlurTransform.apply(resource, 1, 10));
                 thumbView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(300).start();
-                handler.postDelayed(() -> loadHD(), 700);
             }
 
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) {
             }
         });
+        handler.postDelayed(this::loadHD, 500);
     }
 
     private void loadHD() {
