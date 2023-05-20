@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.shubhamgupta16.simplewallpaper.models.CategoryPOJO;
 import com.shubhamgupta16.simplewallpaper.activities.MoreWallsActivity;
 import com.shubhamgupta16.simplewallpaper.R;
@@ -47,9 +48,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         }
 
         CategoryPOJO pojo = list.get(position);
-        Glide.with(context).load(pojo.getPreview1()).into(holder.image1);
-                Glide.with(context).load(pojo.getPreview2()).into(holder.image2);
-        Glide.with(context).load(pojo.getPreview3()).into(holder.image3);
+        Glide.with(context).load(pojo.getPreview1()).transition(DrawableTransitionOptions.withCrossFade()).into(holder.image1);
+                Glide.with(context).load(pojo.getPreview2()).transition(DrawableTransitionOptions.withCrossFade()).into(holder.image2);
+        Glide.with(context).load(pojo.getPreview3()).transition(DrawableTransitionOptions.withCrossFade()).into(holder.image3);
         holder.title.setText(pojo.getName());
         holder.subtitle.setText(context.getResources().getQuantityString(R.plurals.wallpaper_s,
                 pojo.getWallsCount(), pojo.getWallsCount()));

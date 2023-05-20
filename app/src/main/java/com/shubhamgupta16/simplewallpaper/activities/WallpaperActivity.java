@@ -2,7 +2,6 @@ package com.shubhamgupta16.simplewallpaper.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,10 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -35,6 +30,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -51,23 +47,30 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import com.shubhamgupta16.simplewallpaper.Application;
+import com.shubhamgupta16.simplewallpaper.MainApplication;
 import com.shubhamgupta16.simplewallpaper.R;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.models.WallsPOJO;
+import com.shubhamgupta16.simplewallpaper.utils.ApplyWallpaper;
+import com.shubhamgupta16.simplewallpaper.utils.FastBlurTransform;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
-import com.shubhamgupta16.simplewallpaper.utils.WallpaperSetter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WallpaperActivity extends AppCompatActivity {
 
     private static final String TAG = "WallpaperActivity";
 
+    private Handler handler;
     private Bitmap imageBitmap;
-    private SQLHelper sqlHelper;
+    private DataService dataService;
     private WallsPOJO pojo;
 
     //    Views
+    private ImageView thumbView;
     private PhotoView photoView;
+    private boolean showThumbnail = true;
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private View topShadow, bottomShadow, saveButton, applyButton, favoriteButton;
@@ -116,7 +119,7 @@ public class WallpaperActivity extends AppCompatActivity {
             return;
         }
         pojo = (WallsPOJO) getIntent().getSerializableExtra("pojo");
-
+        handler = new Handler(Looper.getMainLooper());
 //        apply full screen
         View mDecorView = getWindow().getDecorView();
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -127,6 +130,7 @@ public class WallpaperActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.full_view_toolbar);
         topShadow = findViewById(R.id.top_shadow);
         bottomShadow = findViewById(R.id.bottom_shadow);
+        thumbView = findViewById(R.id.thumbView);
         photoView = findViewById(R.id.photo_view);
         progressBar = findViewById(R.id.full_progressbar);
         bottomNavLayout = findViewById(R.id.bottomButtonNav);
@@ -151,7 +155,7 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 
 //        init helpers and ads
-        sqlHelper = new SQLHelper(this);
+        dataService = MainApplication.getDataService(getApplication());
         initAd();
         loadInterstitial();
 
@@ -162,26 +166,30 @@ public class WallpaperActivity extends AppCompatActivity {
             findViewById(R.id.premiumImage).setVisibility(View.VISIBLE);
         }
         photoView.setOnPhotoTapListener((view, x, y) -> toggleTouch());
-        photoView.setTag(false);
+        photoView.setZoomable(false);
 
 //        load blur image into photoView
-        Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).into(new CustomTarget<Bitmap>() {
+        Glide.with(this).asBitmap().load(pojo.getPreviewUrl()).diskCacheStrategy(DiskCacheStrategy.DATA).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                if (photoView.getTag().equals(false)) {
-                    photoView.setImageBitmap(fastBlur(WallpaperActivity.this, resource));
-                }
+                if (!showThumbnail) return;
+                thumbView.setAlpha(0f);
+                thumbView.setImageBitmap(FastBlurTransform.apply(resource, 1, 10));
+                thumbView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(300).start();
             }
 
             @Override
             public void onLoadCleared(@Nullable Drawable placeholder) {
             }
         });
+        handler.postDelayed(this::loadHD, 500);
+    }
 
-//        load high res image into photoView
+    private void loadHD() {
         Glide.with(this).asBitmap().load(pojo.getUrl()).listener(new RequestListener<Bitmap>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                showThumbnail = false;
                 Toast.makeText(WallpaperActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -189,15 +197,19 @@ public class WallpaperActivity extends AppCompatActivity {
 
             @Override
             public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                imageBitmap = resource;
+                showThumbnail = false;
+                photoView.setZoomable(true);
+                handler.postDelayed( () -> thumbView.setImageBitmap(null), 1000);
+                progressBar.setVisibility(View.GONE);
                 return false;
             }
         }).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                imageBitmap = resource;
-                photoView.setImageBitmap(imageBitmap);
-                photoView.setTag(true);
-                progressBar.setVisibility(View.GONE);
+                photoView.setAlpha(0f);
+                photoView.setImageBitmap(resource);
+                photoView.animate().withEndAction(() -> thumbView.setAlpha(1f)).alpha(1f).setDuration(300).start();
             }
 
             @Override
@@ -264,7 +276,7 @@ public class WallpaperActivity extends AppCompatActivity {
     private void setupBottomNav() {
         final ImageView heartImage = favoriteButton.findViewById(R.id.heartImage);
 
-        if (sqlHelper.isFavorite(pojo.getId()))
+        if (dataService.isFavorite(pojo.getUrl()))
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
         else
             heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
@@ -292,11 +304,11 @@ public class WallpaperActivity extends AppCompatActivity {
         });
 //        favorite button click
         favoriteButton.setOnClickListener(view -> {
-            if (sqlHelper.isFavorite(pojo.getId())) {
-                sqlHelper.toggleFavorite(pojo.getId(), false);
+            if (dataService.isFavorite(pojo.getUrl())) {
+                dataService.toggleFavorite(pojo, false);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_border_24);
             } else {
-                sqlHelper.toggleFavorite(pojo.getId(), true);
+                dataService.toggleFavorite(pojo, true);
                 heartImage.setImageResource(R.drawable.ic_baseline_favorite_24);
             }
         });
@@ -317,20 +329,6 @@ public class WallpaperActivity extends AppCompatActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             saveImage();
         }
-    }
-
-    //    apply blur on bitmap
-    private static Bitmap fastBlur(Context context, Bitmap source) {
-        Bitmap bitmap = source.copy(source.getConfig(), true);
-        RenderScript rs = RenderScript.create(context);
-        Allocation input = Allocation.createFromBitmap(rs, source, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
-        Allocation output = Allocation.createTyped(rs, input.getType());
-        ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-        script.setRadius(18);
-        script.setInput(input);
-        script.forEach(output);
-        output.copyTo(bitmap);
-        return bitmap;
     }
 
     private void saveImage() {
@@ -384,11 +382,12 @@ public class WallpaperActivity extends AppCompatActivity {
     @Override
     public void finish() {
         Log.d(TAG, "finish: called -> " + (mInterstitialAd != null));
-        if (!(getApplication() instanceof Application)){
+        if (!(getApplication() instanceof MainApplication)) {
             super.finish();
         }
-        final Application application = (Application) getApplication();
-        if (mInterstitialAd != null && !isInterstitialApplyShown && !isInterstitialSaveShown && application.canShowInterstitial()) {
+        final MainApplication mainApplication = (MainApplication) getApplication();
+
+        if (mInterstitialAd != null && !isInterstitialApplyShown && !isInterstitialSaveShown && mainApplication.canShowInterstitial()) {
             mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                 @Override
                 public void onAdDismissedFullScreenContent() {
@@ -407,7 +406,7 @@ public class WallpaperActivity extends AppCompatActivity {
                 @Override
                 public void onAdShowedFullScreenContent() {
                     super.onAdShowedFullScreenContent();
-                    application.interstitialShown();
+                    mainApplication.interstitialShown();
                 }
             });
             mInterstitialAd.show(this);
@@ -426,7 +425,7 @@ public class WallpaperActivity extends AppCompatActivity {
             saveButton.setClickable(true);
             applyButton.setClickable(true);
             favoriteButton.setClickable(true);
-            toolbar.setNavigationOnClickListener(v->finish());
+            toolbar.setNavigationOnClickListener(v -> finish());
         } else {
             toolbar.animate().alpha(0).setDuration(200);
             topShadow.animate().alpha(0).setDuration(200);
@@ -441,16 +440,22 @@ public class WallpaperActivity extends AppCompatActivity {
 
     private void applyWallpaper(int where) {
         processStart(getString(R.string.success_applied));
-        WallpaperSetter.apply(this, imageBitmap, where, b -> {
-            if (b) {
-                if (isInterstitialApplyShown)
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            final boolean b = ApplyWallpaper.fromBitmap(this, imageBitmap, where);
+            handler.post(() -> {
+                if (b) {
+                    if (isInterstitialApplyShown)
+                        processStopIfDone();
+                    else
+                        showInterstitial(false);
+                } else {
+                    message = "Failed to apply wallpaper";
                     processStopIfDone();
-                else
-                    showInterstitial(false);
-            } else {
-                message = "Failed to apply wallpaper";
-                processStopIfDone();
-            }
+                }
+            });
         });
     }
 
@@ -515,8 +520,8 @@ public class WallpaperActivity extends AppCompatActivity {
     protected void onDestroy() {
         bannerAdView.destroy();
         Intent i = new Intent();
-        i.putExtra("id", pojo.getId());
-        i.putExtra("fav", sqlHelper.isFavorite(pojo.getId()));
+        i.putExtra("id", pojo.getViewType());
+        i.putExtra("fav", dataService.isFavorite(pojo.getUrl()));
         setResult(RESULT_OK, i);
         super.onDestroy();
     }

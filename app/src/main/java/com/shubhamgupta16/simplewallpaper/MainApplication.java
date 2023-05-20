@@ -1,6 +1,7 @@
 package com.shubhamgupta16.simplewallpaper;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +14,15 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
+import com.shubhamgupta16.simplewallpaper.data_source.DataService;
+import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
+import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
-import com.shubhamgupta16.simplewallpaper.utils.InitSQL;
-import com.shubhamgupta16.simplewallpaper.utils.SQLHelper;
+import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
 
 
-public class Application extends android.app.Application
+public class MainApplication extends android.app.Application
         implements ActivityLifecycleCallbacks, DefaultLifecycleObserver {
 
     private AppOpenAdManager appOpenAdManager;
@@ -29,11 +32,18 @@ public class Application extends android.app.Application
 
     private int interstitialAfterClicks;
     private int cardClicks;
-    public void interstitialShown(){
+    private DataService dataService;
+
+    public static DataService getDataService(Application application) {
+        return ((MainApplication) application).dataService;
+    }
+
+    public void interstitialShown() {
         Log.d(TAG, "interstitialShown: called");
         cardClicks = 0;
     }
-    public boolean canShowInterstitial(){
+
+    public boolean canShowInterstitial() {
         cardClicks++;
         Log.d(TAG, "canShowInterstitial: " + cardClicks);
         return cardClicks >= interstitialAfterClicks;
@@ -48,11 +58,9 @@ public class Application extends android.app.Application
         cardClicks = interstitialAfterClicks - 2;
         Utils.initTheme(this);
 
-        InitSQL initSQL = new InitSQL(this, new SQLHelper(this));
-
-        initSQL.setupCategories();
-        initSQL.setupWallpapers();
-
+        SQLCategories sqlCategories = new SQLCategories(this);
+        SQLFav sqlFav = new SQLFav(this);
+        dataService = new SQLDataServiceImpl(this, sqlCategories, sqlFav);
 
         MobileAds.initialize(this, initializationStatus -> {
         });
@@ -71,7 +79,7 @@ public class Application extends android.app.Application
 
             @Override
             public void onAdShown() {
-                if (currentActivity instanceof SplashActivity){
+                if (currentActivity instanceof SplashActivity) {
                     ((SplashActivity) currentActivity).notifyAdShown();
                 }
             }
@@ -83,7 +91,7 @@ public class Application extends android.app.Application
 
             @Override
             public void onAdComplete() {
-                if (currentActivity instanceof SplashActivity){
+                if (currentActivity instanceof SplashActivity) {
                     ((SplashActivity) currentActivity).notifyAdComplete();
                 }
             }
@@ -96,7 +104,7 @@ public class Application extends android.app.Application
 
     }
 
-    private void tryShowSplashAd(){
+    private void tryShowSplashAd() {
         if (currentActivity instanceof SplashActivity) {
             appOpenAdManager.showAdIfAvailable(currentActivity);
         }
