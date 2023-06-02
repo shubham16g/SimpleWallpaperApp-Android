@@ -16,7 +16,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.shubhamgupta16.simplewallpaper.activities.SplashActivity;
 import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
-import com.shubhamgupta16.simplewallpaper.data_source.impl.FirebaseDataServiceImpl;
+import com.shubhamgupta16.simplewallpaper.data_source.impl.SQLDataServiceImpl;
 import com.shubhamgupta16.simplewallpaper.utils.AppOpenAdManager;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 import com.shubhamgupta16.simplewallpaper.utils.Utils;
@@ -60,7 +60,7 @@ public class MainApplication extends android.app.Application
 
         SQLCategories sqlCategories = new SQLCategories(this);
         SQLFav sqlFav = new SQLFav(this);
-        dataService = new FirebaseDataServiceImpl(this, sqlCategories, sqlFav);
+        dataService = new SQLDataServiceImpl(this, sqlCategories, sqlFav);
 
         MobileAds.initialize(this, initializationStatus -> {
         });
