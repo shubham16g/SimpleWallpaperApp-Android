@@ -8,12 +8,12 @@ import com.shubhamgupta16.simplewallpaper.data_source.DataService;
 import com.shubhamgupta16.simplewallpaper.data_source.SQLCategories;
 import com.shubhamgupta16.simplewallpaper.utils.SQLFav;
 
-public class SQLDataServiceImpl extends DataService {
+public class FirebaseDataServiceImpl extends DataService {
 
     final InternalSQLWallpapers sqlWallpapers;
     final Context context;
 
-    public SQLDataServiceImpl(Context context, SQLCategories sqlCategories, SQLFav sqlFav) {
+    public FirebaseDataServiceImpl(Context context, SQLCategories sqlCategories, SQLFav sqlFav) {
         super(sqlCategories, sqlFav);
         this.context = context;
         this.sqlWallpapers = new InternalSQLWallpapers(context);
