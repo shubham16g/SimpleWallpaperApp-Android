@@ -35,11 +35,11 @@ public abstract class InitSQL {
 
     public static void applyCategories(Context context, InternalSQLWallpapers sqlWallpapers, SQLCategories sqlCategories) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int version = prefs.getInt("version", 0);
+        int version = prefs.getInt("version_cat", 0);
         if (version != BuildConfig.VERSION_CODE) {
             sqlCategories.clearAll();
             setupCategories(context, sqlCategories, sqlWallpapers);
-            prefs.edit().putInt("version", BuildConfig.VERSION_CODE).apply();
+            prefs.edit().putInt("version_cat", BuildConfig.VERSION_CODE).apply();
         }
     }
 

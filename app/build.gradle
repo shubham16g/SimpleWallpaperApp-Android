@@ -17,8 +17,8 @@ android {
         applicationId "com.shubhamgupta16.simplewallpaper"
         targetSdk 33
         minSdk 21
-        versionCode 5
-        versionName "2.3"
+        versionCode 6
+        versionName "2.4"
 
         resValue("string", "app_name", secretProperties['APP_NAME'])
         resValue("string", "privicy_policy", secretProperties['PRIVACY_POLICY_URL'])
